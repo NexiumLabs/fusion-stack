@@ -21,18 +21,28 @@ export function BuilderClient() {
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      <div className="hidden w-64 shrink-0 border-r border-white/10 lg:flex lg:flex-col">
+      {/* Sidebar */}
+      <div
+        className="hidden w-64 shrink-0 border-r border-[rgba(0,210,210,0.08)] lg:flex lg:flex-col"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(0,210,210,0.03) 0%, rgba(2,12,14,0.6) 100%)",
+          backdropFilter: "blur(20px)",
+        }}
+      >
         <Sidebar selections={selections as Selections} onChange={handleChange} />
       </div>
 
+      {/* Main panel */}
       <div className="flex flex-1 flex-col overflow-y-auto">
-        <div className="border-b border-white/10 px-6 py-3">
-          <h1 className="font-mono text-xs uppercase tracking-widest text-white/40">
-            <span className="text-white/20">&gt;_</span> Stack Builder
+        <div className="border-b border-[rgba(0,210,210,0.08)] px-6 py-3.5">
+          <h1 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[rgba(0,210,210,0.38)]">
+            <span className="text-[rgba(0,210,210,0.22)]">&gt;_</span>{" "}
+            Stack Builder
           </h1>
         </div>
 
-        <div className="flex flex-1 flex-col gap-10 px-6 py-8">
+        <div className="flex flex-1 flex-col gap-12 px-6 py-8">
           {STACKS.map((category) => (
             <StackSection
               key={category.id}

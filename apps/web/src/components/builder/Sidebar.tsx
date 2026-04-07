@@ -15,6 +15,18 @@ type SidebarProps = {
   onChange: (updates: Partial<Selections>) => void
 }
 
+function SidebarLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.18em] text-[rgba(0,210,210,0.35)]">
+      {children}
+    </p>
+  )
+}
+
+function SidebarDivider() {
+  return <div className="h-px bg-[rgba(0,210,210,0.07)]" />
+}
+
 export function Sidebar({ selections, onChange }: SidebarProps) {
   const [shareLabel, setShareLabel] = useState("Share")
 
@@ -49,16 +61,14 @@ export function Sidebar({ selections, onChange }: SidebarProps) {
     onChange({ [categoryId]: "none" } as Partial<Selections>)
   }
 
-  const totalPicks = Object.entries(selections)
-    .filter(([k, v]) => k !== "name" && v !== "none")
-    .length
+  const totalPicks = Object.entries(selections).filter(
+    ([k, v]) => k !== "name" && v !== "none"
+  ).length
 
   return (
-    <aside className="flex h-full flex-col gap-5 overflow-y-auto p-4">
+    <aside className="flex h-full flex-col gap-4 overflow-y-auto p-4">
       <div>
-        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-widest text-white/30">
-          Project Name
-        </p>
+        <SidebarLabel>Project Name</SidebarLabel>
         <Input
           value={selections.name}
           onChange={(e) => onChange({ name: e.target.value })}
@@ -67,32 +77,35 @@ export function Sidebar({ selections, onChange }: SidebarProps) {
         />
       </div>
 
+      <SidebarDivider />
+
       <div>
-        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-widest text-white/30">
-          CLI Command
-        </p>
+        <SidebarLabel>CLI Command</SidebarLabel>
         <CommandPreview selections={selections} />
       </div>
 
+      <SidebarDivider />
+
       <div>
-        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-widest text-white/30">
+        <SidebarLabel>
           Selected Stack{" "}
-          <span className="text-white/20">({totalPicks} picks)</span>
-        </p>
+          <span className="text-[rgba(0,210,210,0.20)]">({totalPicks} picks)</span>
+        </SidebarLabel>
         <SelectedChips selections={selections} onRemove={handleRemove} />
       </div>
 
-      <div className="mt-auto flex flex-col gap-2">
-        <div className="grid grid-cols-2 gap-2">
+      <div className="mt-auto flex flex-col gap-2 pt-2">
+        <SidebarDivider />
+        <div className="grid grid-cols-2 gap-2 pt-2">
           <Button variant="outline" size="sm" onClick={handleRandomize}>
-            <Shuffle size={12} /> Randomize
+            <Shuffle size={11} /> Randomize
           </Button>
           <Button variant="outline" size="sm" onClick={handleReset}>
-            <RotateCcw size={12} /> Reset
+            <RotateCcw size={11} /> Reset
           </Button>
         </div>
         <Button variant="ghost" size="sm" onClick={handleShare} className="w-full">
-          <Share2 size={12} /> {shareLabel}
+          <Share2 size={11} /> {shareLabel}
         </Button>
       </div>
     </aside>
