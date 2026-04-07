@@ -4,13 +4,13 @@ export type StackOption = {
   description: string
   icon: string
   default?: boolean
+  /** Format: "categoryId:optionId" — e.g. "be:hono" means incompatible when backend is Hono */
   incompatibleWith?: string[]
 }
 
 export type StackCategory = {
   id: string
   label: string
-  multiple?: boolean
   options: StackOption[]
 }
 
@@ -41,20 +41,41 @@ export const STACKS: StackCategory[] = [
       {
         id: "convex",
         label: "Convex",
-        description: "Reactive backend-as-a-service",
+        description: "Reactive backend-as-a-service with built-in database",
         icon: "⚡",
         default: true,
       },
       {
         id: "hono",
         label: "Hono",
-        description: "Ultrafast web framework",
+        description: "Ultrafast web framework for Node.js",
         icon: "🔥",
       },
       {
         id: "none",
         label: "No Backend",
-        description: "Frontend-only or BaaS project",
+        description: "Frontend-only or external API",
+        icon: "○",
+      },
+    ],
+  },
+  {
+    id: "db",
+    label: "Database",
+    options: [
+      {
+        id: "convex",
+        label: "Convex",
+        description: "Built into Convex backend — reactive queries, zero config",
+        icon: "⚡",
+        default: true,
+        // Convex DB only makes sense when Convex is the backend
+        incompatibleWith: ["be:hono", "be:none"],
+      },
+      {
+        id: "none",
+        label: "None for now",
+        description: "No database — Drizzle & Prisma support coming soon",
         icon: "○",
       },
     ],
@@ -85,13 +106,34 @@ export const STACKS: StackCategory[] = [
     ],
   },
   {
+    id: "ui",
+    label: "UI Library",
+    options: [
+      {
+        id: "none",
+        label: "Tailwind only",
+        description: "Utility-first CSS — no component library",
+        icon: "🎨",
+        default: true,
+      },
+      {
+        id: "shadcn",
+        label: "shadcn/ui",
+        description: "Copy-paste components built on Radix UI and Tailwind",
+        icon: "🧩",
+        // shadcn/ui requires a React frontend
+        incompatibleWith: ["fe:none"],
+      },
+    ],
+  },
+  {
     id: "email",
     label: "Email",
     options: [
       {
         id: "resend",
         label: "Resend",
-        description: "Email API for developers",
+        description: "Email API built for developers",
         icon: "✉️",
         default: true,
       },
@@ -115,12 +157,6 @@ export const STACKS: StackCategory[] = [
         default: true,
       },
       {
-        id: "bun",
-        label: "Bun",
-        description: "All-in-one JavaScript runtime",
-        icon: "🍞",
-      },
-      {
         id: "npm",
         label: "npm",
         description: "The original Node.js package manager",
@@ -130,15 +166,12 @@ export const STACKS: StackCategory[] = [
   },
 ]
 
-export const COMPATIBILITY: Record<string, string[]> = {
-  convex: [],
-  hono: [],
-  clerk: [],
-  "better-auth": [],
-  nextjs: [],
-  resend: [],
-}
-
+/**
+ * Returns a human-readable incompatibility reason for a given option,
+ * given the current selections. Returns null if no conflict.
+ *
+ * incompatibleWith uses "categoryId:optionId" format, e.g. "be:hono"
+ */
 export function getIncompatible(
   optionId: string,
   categoryId: string,
@@ -146,19 +179,33 @@ export function getIncompatible(
 ): string | null {
   const category = STACKS.find((c) => c.id === categoryId)
   if (!category) return null
+  const thisOption = category.options.find((o) => o.id === optionId)
+  if (!thisOption) return null
 
+  // Forward check: does this option declare itself incompatible with something selected?
+  if (thisOption.incompatibleWith) {
+    for (const rule of thisOption.incompatibleWith) {
+      const [rCat, rOpt] = rule.split(":")
+      if (rCat && rOpt && selections[rCat] === rOpt) {
+        const conflictCat = STACKS.find((c) => c.id === rCat)
+        const conflictOpt = conflictCat?.options.find((o) => o.id === rOpt)
+        return `Not compatible with ${conflictOpt?.label ?? rOpt}`
+      }
+    }
+  }
+
+  // Reverse check: does something already selected declare itself incompatible with this?
   for (const [selCatId, selOptId] of Object.entries(selections)) {
     if (selCatId === categoryId) continue
-    const selCategory = STACKS.find((c) => c.id === selCatId)
-    if (!selCategory) continue
-    const selOption = selCategory.options.find((o) => o.id === selOptId)
-    if (!selOption) continue
-    if (selOption.incompatibleWith?.includes(optionId)) {
-      return `Not compatible with ${selOption.label}`
-    }
-    const thisOption = category.options.find((o) => o.id === optionId)
-    if (thisOption?.incompatibleWith?.includes(selOptId)) {
-      return `Not compatible with ${selOption.label}`
+    const selCat = STACKS.find((c) => c.id === selCatId)
+    const selOpt = selCat?.options.find((o) => o.id === selOptId)
+    if (!selOpt?.incompatibleWith) continue
+
+    for (const rule of selOpt.incompatibleWith) {
+      const [rCat, rOpt] = rule.split(":")
+      if (rCat === categoryId && rOpt === optionId) {
+        return `Not compatible with ${selOpt.label}`
+      }
     }
   }
 
