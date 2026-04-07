@@ -9,8 +9,8 @@
     "typecheck": "turbo typecheck"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "NexiumLabs Limited",
+  "license": "MIT",
   "packageManager": "pnpm@10.26.0",
   "devDependencies": {
     "turbo": "latest"
