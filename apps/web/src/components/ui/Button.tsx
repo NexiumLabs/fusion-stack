@@ -12,13 +12,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(0,210,210,0.50)] disabled:pointer-events-none disabled:opacity-40",
+          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(0,221,212,0.45)] disabled:pointer-events-none disabled:opacity-40",
           {
-            "bg-[#00D4D4] text-[#020C0E] font-semibold hover:bg-[#00FFEE] hover:shadow-[0_0_20px_rgba(0,210,210,0.40)]":
+            /* Primary — full cyan, black text. The one vivid color moment, matching NexiumLabs CTA */
+            "bg-[#00DDD4] text-[#090B0C] font-semibold hover:bg-[#00F0E6] hover:shadow-[0_0_22px_rgba(0,221,212,0.40)]":
               variant === "default",
-            "text-[rgba(0,210,210,0.70)] hover:text-[#00D4D4] hover:bg-[rgba(0,210,210,0.06)]":
+            /* Ghost — white text, barely there bg on hover */
+            "text-white/45 hover:text-white hover:bg-white/[0.05]":
               variant === "ghost",
-            "border border-[rgba(0,210,210,0.20)] bg-[rgba(0,210,210,0.04)] text-[rgba(0,210,210,0.70)] hover:border-[rgba(0,210,210,0.38)] hover:bg-[rgba(0,210,210,0.08)] hover:text-[#00D4D4] hover:shadow-[0_0_14px_rgba(0,210,210,0.15)]":
+            /* Outline — white border, white text. Clean, no cyan unless hovered */
+            "border border-white/[0.10] bg-white/[0.03] text-white/55 hover:border-white/[0.18] hover:bg-white/[0.06] hover:text-white":
               variant === "outline",
           },
           {

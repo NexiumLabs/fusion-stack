@@ -11,7 +11,7 @@ export function Chip({ label, onRemove, className }: ChipProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-[rgba(0,210,210,0.18)] bg-[rgba(0,210,210,0.06)] px-2.5 py-1 text-xs text-[rgba(0,210,210,0.80)] backdrop-blur-sm",
+        "inline-flex items-center gap-1.5 rounded-full border border-white/[0.10] bg-white/[0.05] px-2.5 py-1 text-xs text-white/65",
         className
       )}
     >
@@ -19,7 +19,7 @@ export function Chip({ label, onRemove, className }: ChipProps) {
       {onRemove && (
         <button
           onClick={onRemove}
-          className="rounded-full text-[rgba(0,210,210,0.40)] hover:text-[#00D4D4] transition-colors"
+          className="rounded-full text-white/25 hover:text-white transition-colors"
           aria-label={`Remove ${label}`}
         >
           <X size={10} />

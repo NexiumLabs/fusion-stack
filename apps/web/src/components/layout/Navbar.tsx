@@ -2,39 +2,27 @@ import Link from "next/link"
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-[rgba(0,210,210,0.10)] bg-[rgba(2,12,14,0.75)] backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[rgba(9,11,12,0.85)] backdrop-blur-xl">
       <div className="mx-auto flex h-13 max-w-7xl items-center justify-between px-5">
         <div className="flex items-center gap-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-mono text-sm font-semibold text-[#F0FAFA]"
-          >
-            <span className="text-[#00D4D4]">&gt;_</span>
+          <Link href="/" className="flex items-center gap-2 font-mono text-sm font-semibold text-white">
+            {/* Cyan ONLY on the >_ — exactly like NexiumLabs uses cyan sparingly */}
+            <span className="text-[#00DDD4]">&gt;_</span>
             <span>fusion-stack</span>
-            <span className="ml-1 rounded-full border border-[rgba(0,210,210,0.22)] bg-[rgba(0,210,210,0.08)] px-2 py-0.5 font-mono text-[9px] tracking-wider text-[rgba(0,210,210,0.60)] uppercase">
-              by nexiumlabs
+            <span className="ml-1 rounded-full border border-white/[0.08] px-2 py-0.5 font-mono text-[9px] tracking-wider text-white/30 uppercase">
+              nexiumlabs
             </span>
           </Link>
           <nav className="hidden items-center gap-6 sm:flex">
-            <Link
-              href="/docs"
-              className="text-sm text-[rgba(200,245,245,0.45)] hover:text-[#00D4D4] transition-colors duration-200"
-            >
-              Docs
-            </Link>
-            <Link
-              href="/builder"
-              className="text-sm text-[rgba(200,245,245,0.45)] hover:text-[#00D4D4] transition-colors duration-200"
-            >
-              Builder
-            </Link>
+            <Link href="/docs"    className="text-sm text-white/45 hover:text-white transition-colors duration-200">Docs</Link>
+            <Link href="/builder" className="text-sm text-white/45 hover:text-white transition-colors duration-200">Builder</Link>
           </nav>
         </div>
         <a
           href="https://github.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[rgba(0,210,210,0.35)] hover:text-[#00D4D4] transition-colors duration-200"
+          className="text-white/25 hover:text-white transition-colors duration-200"
           aria-label="GitHub"
         >
           <svg height="17" width="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">

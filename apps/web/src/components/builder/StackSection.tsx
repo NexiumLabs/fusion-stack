@@ -10,14 +10,13 @@ type StackSectionProps = {
 }
 
 export function StackSection({ category, selections, onSelect }: StackSectionProps) {
-  const currentValue =
-    selections[category.id] ?? category.options.find((o) => o.default)?.id ?? "none"
+  const currentValue = selections[category.id] ?? category.options.find((o) => o.default)?.id ?? "none"
 
   return (
     <section>
-      <h2 className="mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[rgba(0,210,210,0.38)]">
-        <span className="text-[rgba(0,210,210,0.22)]">&gt;_</span>{" "}
-        {category.label}
+      <h2 className="mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
+        {/* Tiny cyan on the prompt only — label text stays white/neutral */}
+        <span className="text-[rgba(0,221,212,0.40)]">&gt;_</span>{" "}{category.label}
       </h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {category.options.map((option) => {

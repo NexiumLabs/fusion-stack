@@ -1,74 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020C0E;
-  --foreground: #F0FAFA;
-  --teal: #00D4D4;
-  --teal-bright: #00FFEE;
-  --teal-border: rgba(0, 210, 210, 0.12);
-  --teal-border-hover: rgba(0, 210, 210, 0.22);
-  --teal-border-active: rgba(0, 210, 210, 0.40);
-  --teal-surface: rgba(0, 210, 210, 0.05);
-  --teal-surface-active: rgba(0, 210, 210, 0.08);
-  --teal-glow: rgba(0, 212, 212, 0.20);
-  --teal-glow-active: rgba(0, 212, 212, 0.40);
-  --glass-blur: blur(20px) saturate(160%);
+  /* True black canvas — no teal tint in the background at all */
+  --bg:      #090B0C;
+  --cyan:    #00DDD4;   /* the NexiumLabs electric cyan-teal */
+
+  /* Text — pure white hierarchy, zero teal */
+  --text-1:  #F8FAFA;                    /* primary   */
+  --text-2:  rgba(255, 255, 255, 0.50);  /* secondary */
+  --text-3:  rgba(255, 255, 255, 0.28);  /* tertiary  */
+
+  /* Borders — pure white opacity, no teal unless active */
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-hover:  rgba(255, 255, 255, 0.14);
+  --border-active: rgba(0, 221, 212, 0.45);
+
+  /* Surfaces — pure white glass */
+  --surface:     rgba(255, 255, 255, 0.035);
+  --surface-sel: rgba(0, 221, 212, 0.06);
+
+  --blur: blur(18px) saturate(140%);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground:  var(--text-1);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
+  /* Pure black — the ambient glow is minimal, just a whisper at the very top */
   background:
-    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(0, 210, 210, 0.09) 0%, transparent 68%),
-    var(--background);
-  color: var(--foreground);
+    radial-gradient(ellipse 60% 35% at 50% -4%, rgba(0, 221, 212, 0.045) 0%, transparent 60%),
+    var(--bg);
+  color: var(--text-1);
   min-height: 100vh;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* Teal-tinted scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 210, 210, 0.15);
-  border-radius: 99px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 210, 210, 0.28);
-}
-
-/* Glass utility */
-.glass {
-  background: var(--teal-surface);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--teal-border);
-  box-shadow:
-    0 4px 32px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(0, 220, 220, 0.07);
-}
-
-.glass-active {
-  background: var(--teal-surface-active);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--teal-border-active);
-  box-shadow:
-    0 0 0 1px rgba(0, 210, 210, 0.18),
-    0 0 22px rgba(0, 210, 210, 0.10),
-    inset 0 1px 0 rgba(0, 220, 220, 0.10);
-}
+::-webkit-scrollbar        { width: 4px; height: 4px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.07); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,221,212,0.25); }
