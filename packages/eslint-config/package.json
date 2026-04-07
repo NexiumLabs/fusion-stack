@@ -1,0 +1,13 @@
+{
+  "name": "@fusion-stack/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./next": "./next.js"
+  },
+  "peerDependencies": {
+    "eslint": ">=9"
+  }
+}
