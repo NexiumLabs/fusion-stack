@@ -6,7 +6,10 @@ export async function runInstall(targetDir: string, pm: "pnpm" | "npm"): Promise
   spinner.start(`Installing dependencies with ${pm}...`)
 
   try {
-    await execa(pm, ["install"], {
+    // --ignore-workspace prevents pnpm from treating the generated project
+    // as part of a parent workspace when the CLI is run from inside one.
+    const args = pm === "pnpm" ? ["install", "--ignore-workspace"] : ["install"]
+    await execa(pm, args, {
       cwd: targetDir,
       stdio: "pipe",
     })

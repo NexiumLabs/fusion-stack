@@ -9,6 +9,13 @@ export function printNextSteps(s: Selections): void {
   steps.push(`${pc.cyan("cd")} ${s.projectName}`)
   steps.push(`${pc.cyan(run)} dev`)
 
+  if (s.ui === "shadcn") {
+    steps.push("")
+    steps.push(pc.yellow("! shadcn/ui setup (run once):"))
+    steps.push(`  npx shadcn@latest init`)
+    steps.push(`  ${pc.dim("→ Then add components: npx shadcn@latest add button input ...")}`)
+  }
+
   if (s.be === "convex") {
     steps.push("")
     steps.push(pc.yellow("! Convex setup (run once):"))

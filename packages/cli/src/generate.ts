@@ -3,7 +3,6 @@ import { fileURLToPath } from "node:url"
 import fse from "fs-extra"
 import * as clack from "@clack/prompts"
 import pc from "picocolors"
-import { execa } from "execa"
 import { mergePackageJsons } from "./merge.js"
 import { runInstall } from "./install.js"
 import { printNextSteps } from "./postSteps.js"
@@ -151,23 +150,7 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
   // 10. Install dependencies
   await runInstall(targetDir, s.pm)
 
-  // 11. shadcn init (post-install — needs Tailwind + deps to be installed first)
-  if (s.ui === "shadcn") {
-    const shadcnSpinner = clack.spinner()
-    shadcnSpinner.start("Initialising shadcn/ui...")
-    try {
-      const execBin = s.pm === "pnpm" ? "pnpm" : "npx"
-      const execArgs = s.pm === "pnpm"
-        ? ["dlx", "shadcn@latest", "init", "--yes"]
-        : ["shadcn@latest", "init", "--yes"]
-      await execa(execBin, execArgs, { cwd: targetDir, stdio: "pipe" })
-      shadcnSpinner.stop("shadcn/ui initialised.")
-    } catch {
-      shadcnSpinner.stop("shadcn/ui init failed — run it manually: npx shadcn@latest init")
-    }
-  }
-
-  // 12. Print next steps
+  // 11. Print next steps
   printNextSteps(s)
 
   clack.outro(`${pc.green("Done!")} Happy building. ${pc.dim("— NexiumLabs")}`)
