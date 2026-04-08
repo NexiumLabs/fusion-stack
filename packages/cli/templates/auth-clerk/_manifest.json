@@ -1,0 +1,4 @@
+{
+  "name": "auth-clerk",
+  "description": "Clerk authentication — middleware, sign-in/sign-up routes"
+}

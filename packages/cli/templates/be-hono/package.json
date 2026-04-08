@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "tsx watch src/server/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "hono": "^4.7.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

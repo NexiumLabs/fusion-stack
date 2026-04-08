@@ -1,0 +1,49 @@
+{
+  "name": "create-fusion-stack",
+  "version": "0.1.0",
+  "description": "Scaffold a fusion-stack project in one command",
+  "author": "NexiumLabs Limited",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "create",
+    "scaffold",
+    "nextjs",
+    "convex",
+    "clerk",
+    "fusion-stack",
+    "starter"
+  ],
+  "bin": {
+    "create-fusion-stack": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "templates/"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.9.0",
+    "commander": "^12.1.0",
+    "deepmerge": "^4.3.1",
+    "execa": "^9.5.0",
+    "fs-extra": "^11.3.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@fusion-stack/tsconfig": "workspace:*",
+    "@types/deepmerge": "^2.2.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20",
+    "tsx": "^4.19.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

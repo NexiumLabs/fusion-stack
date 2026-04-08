@@ -1,0 +1,4 @@
+{
+  "name": "email-resend",
+  "description": "Resend email API — client + sendEmail helper"
+}
