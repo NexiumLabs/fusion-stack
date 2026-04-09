@@ -33,14 +33,21 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
       if (!cat) return "none"
       return cat.options[Math.floor(Math.random() * cat.options.length)]?.id ?? "none"
     }
-    onChange({ fe: pick("fe"), be: pick("be"), db: pick("db"), auth: pick("auth"), ui: pick("ui"), email: pick("email"), pm: pick("pm") })
+    const updates = Object.fromEntries(STACKS.map((cat) => [cat.id, pick(cat.id)]))
+    onChange(updates as Partial<Selections>)
   }
 
   function handleShare() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setShareLabel("Copied!")
-      setTimeout(() => setShareLabel("Share"), 2000)
-    })
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        setShareLabel("Copied!")
+        setTimeout(() => setShareLabel("Share"), 2000)
+      })
+      .catch(() => {
+        setShareLabel("Copy failed")
+        setTimeout(() => setShareLabel("Share"), 2000)
+      })
   }
 
   const totalPicks = Object.entries(selections).filter(([k, v]) => k !== "name" && v !== "none").length

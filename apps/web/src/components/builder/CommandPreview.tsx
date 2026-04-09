@@ -9,10 +9,15 @@ export function CommandPreview({ selections }: { selections: Selections }) {
   const command = buildCommand(selections)
 
   function handleCopy() {
-    navigator.clipboard.writeText(command.replace(/\s*\\\n\s*/g, " ")).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
+    navigator.clipboard
+      .writeText(command.replace(/\s*\\\n\s*/g, " "))
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch(() => {
+        // Clipboard access denied (HTTP, iframe, or permission blocked)
+      })
   }
 
   return (
