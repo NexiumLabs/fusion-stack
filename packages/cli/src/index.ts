@@ -11,7 +11,7 @@ import type { Selections } from "./types.js"
 
 // Read version from package.json without bundling it
 const require = createRequire(import.meta.url)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+ 
 const version = (require("../package.json") as { version: string }).version
 
 const program = new Command()
