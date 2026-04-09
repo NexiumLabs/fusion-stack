@@ -1,5 +1,6 @@
 import { execa } from "execa"
 import * as clack from "@clack/prompts"
+import pc from "picocolors"
 
 export async function runInstall(targetDir: string, pm: "pnpm" | "npm"): Promise<void> {
   const spinner = clack.spinner()
@@ -16,6 +17,9 @@ export async function runInstall(targetDir: string, pm: "pnpm" | "npm"): Promise
     spinner.stop("Dependencies installed.")
   } catch (err) {
     spinner.stop("Install failed.")
+    if (err instanceof Error && err.message) {
+      console.error(pc.red(err.message))
+    }
     throw err
   }
 }

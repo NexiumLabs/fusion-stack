@@ -43,9 +43,16 @@ program
       return
     }
 
+    // Validate project name (flag mode — interactive mode validates via prompt)
+    const rawName = projectNameArg ?? DEFAULT_SELECTIONS.projectName
+    if (!/^[a-z0-9-]+$/.test(rawName)) {
+      console.error(pc.red(`Invalid project name "${rawName}" — use lowercase letters, numbers, and hyphens only`))
+      process.exit(1)
+    }
+
     // Flag mode — parse selections from CLI args
     const selections: Selections = {
-      projectName: projectNameArg ?? DEFAULT_SELECTIONS.projectName,
+      projectName: rawName,
       fe: (opts["frontend"] as Selections["fe"]) ?? DEFAULT_SELECTIONS.fe,
       be: (opts["backend"] as Selections["be"]) ?? DEFAULT_SELECTIONS.be,
       db: (opts["database"] as Selections["db"]) ?? DEFAULT_SELECTIONS.db,
