@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Fetch full history so changesets can detect what changed
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -27,16 +30,25 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
+      - name: Build packages
         run: pnpm build
 
-      - name: Create Release PR or Publish
+      # Phase 1 — if changesets exist: opens/updates a "Version Packages" PR
+      # Phase 2 — if that PR is merged: bumps versions, tags, and publishes to npm
+      - name: Version PR or Publish to npm
+        id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm release
-          title: "chore: release packages"
+          version: pnpm version
+          title: "chore: version packages"
           commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Published packages
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          echo "Published: ${{ steps.changesets.outputs.publishedPackages }}"
