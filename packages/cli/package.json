@@ -1,6 +1,6 @@
 {
   "name": "create-fusion-stack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Scaffold a fusion-stack project in one command",
   "author": "NexiumLabs Limited",
   "license": "MIT",
