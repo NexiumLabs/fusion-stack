@@ -1,0 +1,163 @@
+---
+title: "Why We Built Fusion Stack"
+description: "There's a gap between heavyweight monorepo scaffolders and a blank Next.js app. We built Fusion Stack to fill it — for freelancers, solo builders, and anyone who just wants to ship."
+date: 2026-04-13
+author: CollinsEzeokeke
+tags: [open-source, tooling, developer-experience, fusion-stack]
+---
+
+## The Problem We Kept Running Into
+
+If you've been around the JavaScript ecosystem long enough, you've probably stumbled across tools like **Better T Stack**, **create-t3-app**, or **Turborepo starters**. They're brilliant — heavily opinionated, pre-configured, and built to scale. They assume you're building something big: multiple apps sharing packages, a team of engineers, a codebase designed to grow for years.
+
+And for that use case, they're exactly right.
+
+But here's the honest truth — that's not most of what gets built day-to-day.
+
+A freelancer building a client's portfolio site doesn't need a shared UI library between five apps. A solo developer spinning up a weekend project idea doesn't need a monorepo with workspace packages. Someone building a simple SaaS MVP doesn't need to spend the first three hours configuring a turborepo pipeline before writing a single line of product code.
+
+The tools built for scale have a cost: **setup friction**. And when you're not building at scale, that friction doesn't pay off.
+
+On the other end of the spectrum, you have `create-next-app` and friends — fast, zero-friction, but completely bare. You pick your framework and then spend the next hour wiring up auth, email, a database client, a component library, and everything else a real project needs. Every single time.
+
+We were stuck in that gap. And we suspected a lot of other people were too.
+
+---
+
+## Honestly? It Was Giving Us Headaches
+
+Before we built Fusion Stack, this is what starting a new project looked like for us on the team.
+
+Client comes through with a brief — standard stuff, a web app, nothing exotic. We'd spin up `create-next-app`, get the bare project, and then immediately start the familiar ritual: install and configure auth, set up the database client, wire in the email provider, add the component library, set up ESLint properly, get TypeScript strict mode playing nice with everything, create the folder structure we actually want instead of the default one.
+
+An hour gone. Sometimes two. Before a single line of actual product code.
+
+And the worst part? We'd done it all before. We'd done it a dozen times. The config was sitting in some old project — we'd just have to find it, copy it across, adapt it, untangle the bits that were specific to the old project. Copy-paste archaeology at the start of every engagement.
+
+We tried Better T Stack. Loved it — but it was clearly built for something different. The monorepo setup, the shared packages, the workspace configuration: brilliant if you're building a platform, overkill if you're building one website. We felt like we were fighting it more than using it when the project was small.
+
+We tried just keeping our own internal starter template. That worked for about three months, until the template went stale, had outdated dependencies, and nobody could agree on which version to treat as canonical. Maintaining a starter template is a whole job in itself.
+
+The headaches were real: **time lost on every project start, no consistency between setups, and always that nagging feeling that the config you copy-pasted was bringing along baggage from somewhere else.**
+
+Eventually we hit a point where someone on the team said, out loud: *"why does this not exist yet?"*
+
+That was the conversation that became Fusion Stack.
+
+---
+
+## What We Actually Needed
+
+After thinking about this for a while, we landed on a simple set of requirements:
+
+- **Pick your tools visually** — not by memorizing CLI flags or reading five different READMEs
+- **Get a properly wired project**, not a blank canvas
+- **No shared packages, no monorepo complexity** — just a single app, ready to go
+- **Work for any size of project** — a personal site, a freelance contract, a side project, a quick prototype
+
+Essentially: the speed of `create-next-app` but with the opinionated wiring of a well-structured stack. A scaffolding tool that respects the fact that sometimes *simple is the point*.
+
+---
+
+## The Insight Behind the Builder
+
+Most scaffolders work one of two ways:
+
+1. **Fully opinionated** — here's the one stack we believe in, take it or leave it
+2. **Interactive CLI prompts** — answer five yes/no questions in sequence, hope you remember what you picked
+
+Neither felt right.
+
+The insight we had was that **stack selection is a visual problem**. You're not answering questions — you're composing something. You want to see your choices laid out together, understand what plays well with what, and be able to change your mind without re-running the whole prompt flow.
+
+So we built a builder UI. You visit the page, click through the categories (frontend, backend, auth, email, package manager), and your selections assemble into a single CLI command in real time. The URL updates as you pick — which means your stack config is a shareable link. Send it to a collaborator, bookmark it, come back to it later.
+
+```bash
+pnpm create fusion-stack@latest
+```
+
+That's the only command you ever need to remember.
+
+---
+
+## Who This Is For
+
+Fusion Stack isn't trying to compete with Better T Stack or Turborepo. Those tools solve a real, important problem. We'd use them ourselves on the right project.
+
+Fusion Stack is for:
+
+- **Freelancers** who build client projects and need to move fast without spending half a day on boilerplate
+- **Solo developers** with an idea that might become something, but isn't there yet
+- **Students and new developers** who want to learn with real tools but aren't ready for monorepo complexity
+- **Anyone who's said** "I just want to build the actual thing"
+
+The goal isn't enterprise-scale scaffolding. It's getting you from zero to coding your actual product logic as fast as possible, with a setup that won't embarrass you when the project grows.
+
+---
+
+## What You Get Out of the Box
+
+When you run the generated command, you get a TypeScript-ready project pre-wired with exactly what you picked. No extra dependencies, no unused config files — just the tools you chose, connected correctly.
+
+Current stack options include:
+
+| Category      | Options                                      |
+|---------------|----------------------------------------------|
+| Frontend      | Next.js 15, Vite + React                     |
+| Backend       | Hono, Convex, tRPC                           |
+| Auth          | Clerk, Better Auth                           |
+| Email         | Resend                                       |
+| UI            | shadcn/ui                                    |
+| Package manager | pnpm, npm, yarn, bun                       |
+
+Each combination is validated — the compatibility matrix in the builder prevents you from selecting options that don't play well together.
+
+---
+
+## The Technical Decisions Worth Calling Out
+
+A few things we did that felt right in practice:
+
+**Builder state lives in the URL.** There's no backend, no session, no account. Your stack config is encoded as query params. This means every link is a shareable stack — `?fe=nextjs&be=convex&auth=clerk` is a complete, bookmarkable configuration. Free, with no infrastructure.
+
+**The CLI merges template slices, not full templates.** Instead of maintaining one giant template per stack combination (which would be exponentially unmaintainable), each stack option is a template *slice* — a partial set of files and package.json entries. The CLI merges the slices you picked at generation time using `deepmerge`. Adding a new integration means adding one slice, not duplicating dozens of templates.
+
+**Documentation is first-class.** Every stack option has a dedicated docs page explaining what it is, why you might pick it, and how it's configured in your generated project. Built with Fumadocs, linked directly from the builder UI.
+
+---
+
+## Why We Made It Open Source
+
+We could have kept Fusion Stack internal. It was already solving our problem — the headaches were gone, projects were starting faster, the team was happier. That would have been enough.
+
+But that felt like the wrong call.
+
+The whole reason this tool exists is because we looked at the ecosystem and saw a gap that nobody had filled. And if we felt that pain, then freelancers, students, solo builders, and small teams everywhere were feeling it too. Keeping it behind closed doors would have meant solving the problem for ourselves and leaving everyone else with the same ritual we'd spent months trying to escape.
+
+So we open-sourced it — and deliberately so.
+
+**The stack options we ship today reflect what we use and what we know.** That's a limited view. The community has tools we haven't encountered, integrations we haven't thought of, and use cases we haven't built for. Open source is the only way Fusion Stack grows past our own blind spots.
+
+The slice architecture of the CLI was designed with this in mind. Adding a new integration doesn't require understanding the whole codebase — you write a template slice for your tool, and it composes cleanly with everything else. We wanted contributing to feel like adding a piece to a puzzle, not rewriting the puzzle itself.
+
+Beyond code contributions, open source means the project is **accountable to its users in a way closed tools never are.** If something is broken, opinionated in the wrong direction, or missing something obvious, anyone can open an issue, start a discussion, or send a PR. That feedback loop is what keeps a tool honest.
+
+We're not building this for NexiumLabs. We're building it for the developer who just got a freelance brief and wants to be coding the actual product within five minutes of opening their terminal. If that's you — the repo is open, the issues are open, and contributions are welcome.
+
+---
+
+Fusion Stack is early. The stack coverage will grow. Community-contributed integrations are the goal — if you have a tool you want to see supported, the slice architecture makes it straightforward to add.
+
+The builder will get smarter about compatibility, better at surfacing tradeoffs, and eventually capable of generating not just the starter but the deployment config, environment variable templates, and CI pipelines to go with it.
+
+But the core principle won't change: **you shouldn't have to spend time on setup to start building**.
+
+---
+
+If you've been reaching for `create-next-app` and spending the first hour of every project re-wiring the same things — give Fusion Stack a try.
+
+```bash
+pnpm create fusion-stack@latest
+```
+
+The builder is at [fusion-stack.dev](https://fusion-stack.dev). Pick your stack. Copy the command. Build the thing.
