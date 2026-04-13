@@ -86,12 +86,12 @@ src/
     useStackSelection.ts  ← nuqs URL state
 ```
 
-### Phase 3 — Fumadocs Docs App (`apps/docs`) — Deferred
-- `pnpm create fumadocs-app` inside `apps/docs`
-- One MDX page per stack option
-- Linked from web navbar
+### Phase 3 — Fumadocs Docs App (`apps/docs`) ✅
+- Fumadocs v16 + Next.js 16, running on port 3001
+- One MDX page per stack option (Next.js, Convex, Hono, Clerk, Better Auth, shadcn/ui, Resend)
+- Linked from web navbar (`/docs`)
 
-### Phase 4 — CLI Package (`packages/cli`) — Deferred
+### Phase 4 — CLI Package (`packages/cli`) ✅
 - Package name: `create-fusion-stack`
 - `@clack/prompts` for interactive prompts
 - Template slices per stack option, merged at generation time
