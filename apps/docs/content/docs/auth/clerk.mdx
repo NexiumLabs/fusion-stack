@@ -1,0 +1,103 @@
+---
+title: Clerk
+description: Complete user management platform with pre-built UI components, social login, MFA, and a generous free tier.
+---
+
+## Overview
+
+**Clerk** provides a complete authentication and user management solution. Fusion Stack scaffolds the middleware, environment variables, and auth routes for you.
+
+## Environment Variables
+
+Add these to `.env.local`:
+
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Optional: custom redirect paths
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+```
+
+Get your keys from [dashboard.clerk.com](https://dashboard.clerk.com).
+
+## Scaffolded Structure
+
+```
+src/
+  app/
+    (auth)/
+      sign-in/[[...sign-in]]/page.tsx
+      sign-up/[[...sign-up]]/page.tsx
+  middleware.ts
+```
+
+## Middleware
+
+```ts
+// src/middleware.ts
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
+
+export default clerkMiddleware((auth, request) => {
+  if (!isPublicRoute(request)) {
+    auth().protect()
+  }
+})
+
+export const config = {
+  matcher: ['/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)', '/(api|trpc)(.*)'],
+}
+```
+
+## Using Auth in Server Components
+
+```tsx
+import { auth, currentUser } from '@clerk/nextjs/server'
+
+export default async function ProfilePage() {
+  const { userId } = await auth()
+  const user = await currentUser()
+
+  return <p>Hello, {user?.firstName}</p>
+}
+```
+
+## Using Auth in Client Components
+
+```tsx
+'use client'
+import { useUser, UserButton, SignInButton } from '@clerk/nextjs'
+
+export function Header() {
+  const { isSignedIn, user } = useUser()
+
+  return isSignedIn ? (
+    <UserButton afterSignOutUrl="/" />
+  ) : (
+    <SignInButton />
+  )
+}
+```
+
+## Convex + Clerk Integration
+
+To pass Clerk's identity to Convex, configure the JWT template:
+
+1. In Clerk dashboard → **JWT Templates** → create a **Convex** template
+2. Set `CLERK_JWT_ISSUER_DOMAIN` in your environment
+
+Then wrap your Convex provider with the Clerk auth helper:
+
+```tsx
+import { ConvexProviderWithClerk } from 'convex/react-clerk'
+import { useAuth } from '@clerk/nextjs'
+
+<ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+  {children}
+</ConvexProviderWithClerk>
+```

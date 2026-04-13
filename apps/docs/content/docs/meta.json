@@ -1,0 +1,4 @@
+{
+  "title": "Fusion Stack",
+  "pages": ["index", "frontend", "backend", "database", "auth", "ui", "email"]
+}

@@ -1,0 +1,117 @@
+---
+title: shadcn/ui
+description: Copy-paste accessible components built on Radix UI primitives and Tailwind CSS — you own the source code.
+---
+
+## Overview
+
+**shadcn/ui** is not a traditional component library — it's a collection of components you copy into your project and own. Components are built on Radix UI primitives and styled with Tailwind CSS.
+
+> Requires a **Next.js frontend**. Not available for API-only or backend-only projects.
+
+## Scaffolded Files
+
+```
+src/
+  components/
+    ui/              # Individual component files live here
+  lib/
+    utils.ts         # cn() helper (clsx + tailwind-merge)
+components.json      # shadcn/ui configuration
+```
+
+## `components.json`
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
+```
+
+## Adding Components
+
+Use the shadcn CLI to add components to your project:
+
+```bash
+# Add a single component
+pnpm dlx shadcn@latest add button
+
+# Add multiple components
+pnpm dlx shadcn@latest add button card input dialog
+```
+
+Components are added to `src/components/ui/`.
+
+## Using Components
+
+```tsx
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+export function Example() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Hello</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Button variant="outline">Click me</Button>
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+## The `cn` Helper
+
+```ts
+// src/lib/utils.ts
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+Use it to conditionally apply classes:
+
+```tsx
+<div className={cn('base-class', isActive && 'active-class', className)} />
+```
+
+## Theming
+
+shadcn/ui uses CSS variables for theming. Override them in `globals.css`:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  /* ... */
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... */
+}
+```

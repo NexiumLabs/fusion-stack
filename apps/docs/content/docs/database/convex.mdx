@@ -1,0 +1,90 @@
+---
+title: Convex Database
+description: The built-in document database that ships with Convex — reactive queries, automatic indexing, and no separate provisioning required.
+---
+
+## Overview
+
+The **Convex database** is automatically included when you select Convex as your backend. It's a document database with reactive queries — when data changes, components re-render automatically without polling.
+
+> This option is only available when **Convex** is selected as the backend. It is incompatible with Hono.
+
+## Schema Definition
+
+Define your schema in `convex/schema.ts`:
+
+```ts
+import { defineSchema, defineTable } from 'convex/server'
+import { v } from 'convex/values'
+
+export default defineSchema({
+  tasks: defineTable({
+    text: v.string(),
+    completed: v.boolean(),
+    userId: v.string(),
+  }).index('by_user', ['userId']),
+
+  notes: defineTable({
+    title: v.string(),
+    body: v.string(),
+  }),
+})
+```
+
+## Reading Data
+
+```ts
+// convex/tasks.ts
+import { query } from './_generated/server'
+
+export const listByUser = query({
+  args: { userId: v.string() },
+  handler: async (ctx, { userId }) => {
+    return ctx.db
+      .query('tasks')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .order('desc')
+      .collect()
+  },
+})
+```
+
+```tsx
+// In a React component
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+
+const tasks = useQuery(api.tasks.listByUser, { userId: 'user_123' })
+```
+
+## Writing Data
+
+```ts
+// convex/tasks.ts
+import { mutation } from './_generated/server'
+
+export const toggle = mutation({
+  args: { taskId: v.id('tasks') },
+  handler: async (ctx, { taskId }) => {
+    const task = await ctx.db.get(taskId)
+    if (!task) throw new Error('Task not found')
+    await ctx.db.patch(taskId, { completed: !task.completed })
+  },
+})
+```
+
+## File Storage
+
+Convex also supports file storage:
+
+```ts
+// Upload a file
+const storageId = await ctx.storage.store(blob)
+
+// Get a public URL
+const url = await ctx.storage.getUrl(storageId)
+```
+
+## No Connection Strings
+
+Unlike traditional databases, Convex requires no connection string, no migration runner, and no ORM. Schema changes apply automatically when you run `npx convex dev`.

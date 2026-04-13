@@ -1,0 +1,82 @@
+---
+title: Hono
+description: Ultrafast, edge-compatible web framework for building APIs — a lightweight alternative to Convex for custom backend logic.
+---
+
+## Overview
+
+**Hono** is a lightweight, edge-first web framework for Node.js and edge runtimes. When selected, Fusion Stack scaffolds a Hono server that runs alongside your Next.js frontend.
+
+## Scaffolded Structure
+
+```
+src/
+  server/
+    index.ts    # Hono app entry — includes a /health check endpoint
+```
+
+## The Generated Server
+
+```ts
+// src/server/index.ts
+import { Hono } from 'hono'
+import { serve } from '@hono/node-server'
+
+const app = new Hono()
+
+app.get('/health', (c) => c.json({ status: 'ok' }))
+
+serve({ fetch: app.fetch, port: 3001 }, (info) => {
+  console.log(`> Server running on http://localhost:${info.port}`)
+})
+
+export default app
+```
+
+## Running the Server
+
+```bash
+# Start both Next.js and Hono together
+pnpm dev
+
+# Or start separately
+node --import tsx/esm src/server/index.ts
+```
+
+The Hono server runs on **port 3001** by default. The Next.js frontend runs on port 3000.
+
+## Type-Safe Client
+
+Use `hono/client` to call your Hono routes from the frontend with full type safety:
+
+```ts
+// src/lib/api.ts
+import { hc } from 'hono/client'
+import type app from '@/server'
+
+export const client = hc<typeof app>('http://localhost:3001')
+
+// In a component or server action:
+const res = await client.health.$get()
+const data = await res.json()
+```
+
+## Adding Routes
+
+```ts
+// src/server/index.ts
+app.get('/posts', async (c) => {
+  const posts = await fetchPosts()
+  return c.json(posts)
+})
+
+app.post('/posts', async (c) => {
+  const body = await c.req.json()
+  return c.json({ created: true, body }, 201)
+})
+```
+
+## Compatibility
+
+- ✅ Works with: Next.js, Clerk, Better Auth, Resend, shadcn/ui
+- ❌ Convex DB is **not available** with Hono — use a separate database (Drizzle + Postgres, Prisma, etc.)

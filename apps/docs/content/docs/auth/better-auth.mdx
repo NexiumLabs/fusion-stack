@@ -1,0 +1,105 @@
+---
+title: Better Auth
+description: TypeScript-first, self-hosted authentication framework with a plugin system and full ownership of your user data.
+---
+
+## Overview
+
+**Better Auth** is a TypeScript-native auth framework that runs on your own infrastructure. You own the user data — no third-party dashboard required. It supports email/password, social OAuth, MFA, and a rich plugin ecosystem.
+
+## Scaffolded File
+
+```
+src/
+  lib/
+    auth.ts    # Better Auth initialization
+```
+
+## `src/lib/auth.ts`
+
+```ts
+import { betterAuth } from 'better-auth'
+
+export const auth = betterAuth({
+  database: {
+    // Configure your database adapter here
+    // e.g., drizzleAdapter(db, { provider: 'pg' })
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+  },
+})
+```
+
+## API Route
+
+Add a catch-all route to handle all auth endpoints:
+
+```ts
+// src/app/api/auth/[...all]/route.ts
+import { auth } from '@/lib/auth'
+import { toNextJsHandler } from 'better-auth/next-js'
+
+export const { GET, POST } = toNextJsHandler(auth)
+```
+
+## Client Setup
+
+```ts
+// src/lib/auth-client.ts
+import { createAuthClient } from 'better-auth/react'
+
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL!,
+})
+
+export const { signIn, signOut, signUp, useSession } = authClient
+```
+
+## Using Auth in Components
+
+```tsx
+'use client'
+import { useSession, signOut } from '@/lib/auth-client'
+
+export function UserMenu() {
+  const { data: session } = useSession()
+
+  if (!session) return <a href="/sign-in">Sign in</a>
+
+  return (
+    <div>
+      <p>{session.user.email}</p>
+      <button onClick={() => signOut()}>Sign out</button>
+    </div>
+  )
+}
+```
+
+## Database Adapter
+
+Better Auth requires a database to persist users. Install and configure an adapter:
+
+```bash
+# With Drizzle + Postgres
+pnpm add drizzle-orm @auth/drizzle-adapter
+```
+
+Better Auth can auto-generate the schema tables — run `npx better-auth generate` after configuration.
+
+## Hono Integration
+
+If you selected Hono as your backend, Better Auth can be used directly with the Hono adapter:
+
+```ts
+import { betterAuth } from 'better-auth'
+import { toNodeHandler } from 'better-auth/node'
+
+app.on(['GET', 'POST'], '/api/auth/**', (c) => toNodeHandler(auth)(c.req.raw, c.res))
+```

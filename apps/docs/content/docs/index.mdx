@@ -1,0 +1,69 @@
+---
+title: Getting Started
+description: Scaffold a full-stack TypeScript project in one command with Fusion Stack.
+full: true
+---
+
+## What is Fusion Stack?
+
+Fusion Stack is a CLI + visual builder that lets you compose a project starter from best-in-class tools. Pick your frontend, backend, auth, email, and more — then run one command to get a fully configured, TypeScript-ready project.
+
+```bash
+pnpm create fusion-stack@latest my-app
+```
+
+Or use the **[visual builder](http://localhost:3000/builder)** to pick your stack and copy the generated command.
+
+---
+
+## Quick Start
+
+```bash
+# Interactive — prompts you for each option
+pnpm create fusion-stack@latest
+
+# One-shot — pass everything as flags
+pnpm create fusion-stack@latest my-app \
+  --frontend nextjs \
+  --backend convex \
+  --auth clerk \
+  --email resend \
+  --pm pnpm
+```
+
+After generation, follow the printed next steps to set your environment variables and start the dev server.
+
+---
+
+## Stack Options
+
+| Category | Options |
+|----------|---------|
+| **Frontend** | Next.js, None |
+| **Backend** | Convex, Hono, None |
+| **Database** | Convex (via backend), None |
+| **Auth** | Clerk, Better Auth, None |
+| **UI Library** | shadcn/ui, Tailwind only |
+| **Email** | Resend, None |
+| **Package Manager** | pnpm, npm |
+
+---
+
+## Compatibility Rules
+
+Some combinations are not compatible:
+
+- **Convex DB** requires the **Convex backend** — selecting Hono or no backend removes the Convex database option
+- **shadcn/ui** requires a **Next.js frontend** — it cannot be used in API-only or backend-only projects
+
+The builder enforces these rules visually. The CLI validates them and adjusts automatically.
+
+---
+
+## Local URLs
+
+| Service | URL |
+|---------|-----|
+| Next.js web app | `http://localhost:3000` |
+| Hono API server | `http://localhost:3001` |
+| Convex dashboard | `https://dashboard.convex.dev` |

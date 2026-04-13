@@ -1,0 +1,18 @@
+{
+  "extends": "@fusion-stack/tsconfig/nextjs",
+  "compilerOptions": {
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@/.source": ["./.source/server"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".source/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

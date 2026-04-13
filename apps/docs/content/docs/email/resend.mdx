@@ -1,0 +1,106 @@
+---
+title: Resend
+description: Email API built for developers — send transactional email from your app with a minimal SDK and React Email templates.
+---
+
+## Overview
+
+**Resend** is a developer-focused email API. It has a clean SDK, supports React Email for building templates, and offers a generous free tier (3,000 emails/month).
+
+## Environment Variable
+
+Add your API key to `.env.local`:
+
+```bash
+RESEND_API_KEY=re_...
+```
+
+Get your key from [resend.com/api-keys](https://resend.com/api-keys).
+
+## Scaffolded File
+
+```
+src/
+  lib/
+    email.ts    # Resend client + sendEmail helper
+```
+
+## `src/lib/email.ts`
+
+```ts
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string
+  subject: string
+  html: string
+}) {
+  const { data, error } = await resend.emails.send({
+    from: 'hello@your-app.com',
+    to,
+    subject,
+    html,
+  })
+
+  if (error) throw new Error(error.message)
+  return data
+}
+```
+
+> Sending email must happen on the **server side** — in Server Actions, API routes, or Convex actions. Never call the Resend API from the browser.
+
+## Using React Email Templates
+
+Install React Email:
+
+```bash
+pnpm add @react-email/components react-email
+```
+
+Create a template:
+
+```tsx
+// src/emails/WelcomeEmail.tsx
+import { Html, Body, Heading, Text, Button } from '@react-email/components'
+
+export function WelcomeEmail({ name }: { name: string }) {
+  return (
+    <Html>
+      <Body>
+        <Heading>Welcome, {name}!</Heading>
+        <Text>Thanks for joining. Get started below.</Text>
+        <Button href="https://your-app.com/dashboard">
+          Open Dashboard
+        </Button>
+      </Body>
+    </Html>
+  )
+}
+```
+
+Send it with `render`:
+
+```ts
+import { render } from '@react-email/render'
+import { WelcomeEmail } from '@/emails/WelcomeEmail'
+
+const html = render(<WelcomeEmail name="Alex" />)
+await sendEmail({ to: 'alex@example.com', subject: 'Welcome!', html })
+```
+
+## From Address
+
+To send from your own domain, verify it in the Resend dashboard under **Domains**, then update the `from` field in `email.ts`.
+
+## Free Tier Limits
+
+| Plan | Emails/month | Domains |
+|------|-------------|---------|
+| Free | 3,000 | 1 |
+| Pro | 50,000+ | Unlimited |
