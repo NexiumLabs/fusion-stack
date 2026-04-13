@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const p=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(p\\); console.log\\(JSON.stringify\\(j.exports,null,2\\)\\)\")",
+      "Bash(node -e \"const p=require\\('/c/Users/techy/development/fusion-stack/apps/docs/node_modules/fumadocs-mdx/package.json'\\); console.log\\(JSON.stringify\\(p.exports,null,2\\)\\)\")"
+    ]
+  }
+}
