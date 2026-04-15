@@ -2,7 +2,41 @@
   "permissions": {
     "allow": [
       "Bash(node -e \"const p=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(p\\); console.log\\(JSON.stringify\\(j.exports,null,2\\)\\)\")",
-      "Bash(node -e \"const p=require\\('/c/Users/techy/development/fusion-stack/apps/docs/node_modules/fumadocs-mdx/package.json'\\); console.log\\(JSON.stringify\\(p.exports,null,2\\)\\)\")"
+      "Bash(node -e \"const p=require\\('/c/Users/techy/development/fusion-stack/apps/docs/node_modules/fumadocs-mdx/package.json'\\); console.log\\(JSON.stringify\\(p.exports,null,2\\)\\)\")",
+      "Bash(pnpm --filter @fusion-stack/cli build)",
+      "Bash(pnpm build:*)",
+      "WebFetch(domain:unpkg.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:simpleicons.org)",
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "Bash(curl -s \"https://unpkg.com/simple-icons@16.16.0/icons/nextdotjs.svg\")",
+      "Bash(curl -s \"https://unpkg.com/simple-icons@16.16.0/icons/tailwindcss.svg\")",
+      "Bash(curl -sI \"https://unpkg.com/simple-icons@16.16.0/simple-icons.json\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/simple-icons/simple-icons/master/_data/simple-icons.json\")",
+      "Bash(python3 -c ':*)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/simple-icons/simple-icons/master/_data/simple-icons.json\" -o /tmp/si.json)",
+      "Bash(node -e ':*)",
+      "WebFetch(domain:convex.dev)",
+      "WebFetch(domain:workos.com)",
+      "WebSearch",
+      "WebFetch(domain:cdn.prod.website-files.com)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/simple-icons/simple-icons/develop/_data/simple-icons.json\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); matches=[i for i in data.get\\('icons',[]\\) if 'convex' in i.get\\('title',''\\).lower\\(\\)]; print\\(json.dumps\\(matches, indent=2\\)\\)\")",
+      "Bash(curl -fsSL \"https://raw.githubusercontent.com/simple-icons/simple-icons/develop/_data/simple-icons.json\" -o /tmp/si.json)",
+      "Bash(echo \"FAIL: $?\")",
+      "Bash(pnpm tsc:*)",
+      "WebFetch(domain:better-auth.com)",
+      "WebFetch(domain:avatars.githubusercontent.com)",
+      "WebFetch(domain:assets.convex.dev)",
+      "Bash(curl -s \"https://github.com/get-convex/convex-backend/search?q=logo+svg&type=code\" -L --max-time 15)",
+      "Bash(curl -s \"https://api.github.com/search/code?q=linearGradient+repo:get-convex/convex-backend&type=code\" -H \"Accept: application/vnd.github.v3+json\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/get-convex/convex-js/main/src/logo.svg\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/get-convex/convex-js/main/logo.svg\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/get-convex/convex-demos/main/logo.svg\")",
+      "Bash(curl -s \"https://convex.dev/_next/static/media/\")",
+      "Bash(curl -sL \"https://convex.dev/brand\" --max-time 15)",
+      "Bash(curl:*)"
     ]
   }
 }
