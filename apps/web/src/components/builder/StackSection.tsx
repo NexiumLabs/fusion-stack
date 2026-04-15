@@ -30,6 +30,7 @@ export function StackSection({ category, selections, onSelect }: StackSectionPro
               description={option.description}
               isSelected={currentValue === option.id}
               isDefault={option.default}
+              isNew={option.isNew}
               incompatibleReason={incompatibleReason}
               onSelect={() => onSelect(category.id, option.id)}
             />

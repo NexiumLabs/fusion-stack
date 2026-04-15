@@ -77,6 +77,7 @@ export async function runInteractive(): Promise<void> {
     message: "Authentication",
     options: [
       { value: "clerk", label: "Clerk", hint: "Complete user management platform" },
+      { value: "workos", label: "WorkOS AuthKit", hint: "Enterprise SSO, magic links, hosted auth UI" },
       { value: "better-auth", label: "Better Auth", hint: "TypeScript-first auth framework" },
       { value: "none", label: "No Auth", hint: "Handle authentication yourself" },
     ],

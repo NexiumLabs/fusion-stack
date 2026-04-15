@@ -31,6 +31,16 @@ export function printNextSteps(s: Selections): void {
     steps.push(`  ${pc.dim("→ dashboard.clerk.com")}`)
   }
 
+  if (s.auth === "workos") {
+    steps.push("")
+    steps.push(pc.yellow("! WorkOS AuthKit — add to .env.local:"))
+    steps.push(`  WORKOS_API_KEY=sk_...`)
+    steps.push(`  WORKOS_CLIENT_ID=client_...`)
+    steps.push(`  WORKOS_COOKIE_PASSWORD=$(openssl rand -base64 32)`)
+    steps.push(`  WORKOS_REDIRECT_URI=http://localhost:3000/callback`)
+    steps.push(`  ${pc.dim("→ dashboard.workos.com — set redirect URI under your app's configuration")}`)
+  }
+
   if (s.auth === "better-auth") {
     steps.push("")
     steps.push(pc.yellow("! Better Auth — add to .env.local:"))

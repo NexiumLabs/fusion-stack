@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Menu, X } from "lucide-react"
 
 // Docs lives on a separate Next.js app — always use <a>, never <Link>
-const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "/docs"
+const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "https://fusion-stack-docs.vercel.app"
 
 export function Navbar() {
   const pathname = usePathname()

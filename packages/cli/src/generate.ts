@@ -28,6 +28,7 @@ function resolveSlices(s: Selections): string[] {
   if (s.db === "convex") slices.push("db-convex")
   if (s.auth === "clerk") slices.push("auth-clerk")
   if (s.auth === "better-auth") slices.push("auth-better-auth")
+  if (s.auth === "workos") slices.push("auth-workos")
   if (s.ui === "shadcn") slices.push("ui-shadcn")
   if (s.email === "resend") slices.push("email-resend")
   return slices

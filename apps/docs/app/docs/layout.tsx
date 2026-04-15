@@ -3,6 +3,9 @@ import type { ReactNode } from 'react'
 import { source } from '@/lib/source'
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
 
+const WEB_URL =
+  process.env.NEXT_PUBLIC_WEB_URL ?? 'https://fusion-stack.vercel.app'
+
 const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
@@ -23,12 +26,12 @@ const baseOptions: BaseLayoutProps = {
         <span>fusion-stack</span>
       </span>
     ),
-    url: 'http://localhost:3000',
+    url: WEB_URL,
   },
   links: [
     {
       text: 'Builder',
-      url: 'http://localhost:3000/builder',
+      url: `${WEB_URL}/builder`,
       active: 'none',
     },
     {

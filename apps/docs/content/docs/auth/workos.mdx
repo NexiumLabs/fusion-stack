@@ -1,0 +1,127 @@
+---
+title: WorkOS AuthKit
+description: Enterprise-grade SSO, magic links, and a hosted auth UI — scaffold in one command with zero custom sign-in pages required.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout'
+
+<Callout type="info">
+  **New in Fusion Stack** — WorkOS AuthKit is freshly supported. Pick it in the CLI or Builder and your middleware, sign-in redirect, and env vars are all wired up automatically.
+</Callout>
+
+## Overview
+
+**WorkOS AuthKit** is built for teams that need enterprise-ready auth from day one — SAML SSO, magic links, Google/Microsoft OAuth, and MFA, all on a WorkOS-hosted UI. You never build a sign-in page; you redirect to it.
+
+Fusion Stack scaffolds:
+- `authkitMiddleware` that protects routes and handles the OAuth callback automatically
+- A `/sign-in` page that redirects to the WorkOS hosted AuthKit UI
+- All required environment variables in `.env.example`
+
+## Environment Variables
+
+Add these to `.env.local`:
+
+```bash
+WORKOS_API_KEY=sk_...
+WORKOS_CLIENT_ID=client_...
+
+# Generate with: openssl rand -base64 32
+WORKOS_COOKIE_PASSWORD=
+
+# Must match the redirect URI set in your WorkOS dashboard
+WORKOS_REDIRECT_URI=http://localhost:3000/callback
+```
+
+Get your API key and client ID from [dashboard.workos.com](https://dashboard.workos.com).
+
+## Scaffolded Structure
+
+```
+src/
+  app/
+    (auth)/
+      sign-in/
+        page.tsx       # Redirects to WorkOS hosted UI
+  middleware.ts        # authkitMiddleware — protects routes + handles /callback
+```
+
+## Middleware
+
+```ts
+// src/middleware.ts
+import { authkitMiddleware } from "@workos-inc/authkit-nextjs"
+
+export default authkitMiddleware()
+
+export const config = {
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
+}
+```
+
+`authkitMiddleware` does two things automatically:
+- Redirects unauthenticated users to the WorkOS hosted login page
+- Handles the `/callback` route — exchanges the auth code for a session cookie
+
+No custom `/callback` route needed.
+
+## Sign-In Page
+
+```tsx
+// src/app/(auth)/sign-in/page.tsx
+import { getSignInUrl } from "@workos-inc/authkit-nextjs"
+import { redirect } from "next/navigation"
+
+export default async function SignInPage() {
+  const url = await getSignInUrl()
+  redirect(url)
+}
+```
+
+This page only activates if a user explicitly navigates to `/sign-in`. The middleware redirects unauthenticated users directly to WorkOS without hitting this route first.
+
+## Reading the User in Server Components
+
+```tsx
+import { withAuth } from "@workos-inc/authkit-nextjs"
+
+export default async function ProfilePage() {
+  const { user } = await withAuth()
+
+  return <p>Hello, {user.firstName}</p>
+}
+```
+
+## Protecting Specific Routes
+
+By default `authkitMiddleware` applies to all matched routes. To make some routes public, pass a `redirectUri` matcher:
+
+```ts
+export default authkitMiddleware({
+  // Routes that don't require authentication
+  publicPaths: ["/", "/about", "/sign-in"],
+})
+```
+
+## Sign Out
+
+```tsx
+import { signOut } from "@workos-inc/authkit-nextjs"
+
+export async function SignOutButton() {
+  return (
+    <form action={async () => { "use server"; await signOut() }}>
+      <button type="submit">Sign out</button>
+    </form>
+  )
+}
+```
+
+## WorkOS Dashboard Setup
+
+1. Go to [dashboard.workos.com](https://dashboard.workos.com) and create an application
+2. Under **Redirects**, add `http://localhost:3000/callback` for development and `https://your-domain.com/callback` for production
+3. Copy your **API Key** and **Client ID** into `.env.local`

@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "/docs"
+const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "https://fusion-stack-docs.vercel.app"
 
 export function Footer() {
   return (

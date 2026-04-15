@@ -1,9 +1,10 @@
 import Link from "next/link"
 import { ArrowRight, Terminal, Layers, Zap } from "lucide-react"
 import { STACKS } from "@/lib/stacks"
+import { getStackIcon } from "@/lib/stack-icons"
 
 // Docs is a separate app — use <a>, never <Link>
-const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "/docs"
+const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "https://fusion-stack-docs.vercel.app"
 
 export default function HomePage() {
   return (
@@ -135,8 +136,15 @@ export default function HomePage() {
                       className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.07] px-3 py-1.5 font-mono text-xs text-white/40 transition-colors duration-150 hover:border-white/[0.13] hover:text-white/60"
                       style={{ background: "rgba(255,255,255,0.022)" }}
                     >
-                      <span className="text-[11px] leading-none">{option.icon}</span>
+                      {getStackIcon(option.icon, 14)}
                       {option.label}
+                      {option.isNew && (
+                        <span className="rounded-full border border-[rgba(0,221,212,0.28)] px-1.5 py-px font-mono text-[8px] uppercase tracking-wider text-[#00DDD4]/60"
+                          style={{ background: "rgba(0,221,212,0.05)" }}
+                        >
+                          new
+                        </span>
+                      )}
                     </span>
                   ))}
                 </div>

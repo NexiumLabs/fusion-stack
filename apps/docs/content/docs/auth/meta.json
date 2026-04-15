@@ -1,4 +1,4 @@
 {
   "title": "Authentication",
-  "pages": ["clerk", "better-auth"]
+  "pages": ["clerk", "workos", "better-auth"]
 }

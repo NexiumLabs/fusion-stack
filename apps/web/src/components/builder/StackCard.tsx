@@ -3,6 +3,7 @@
 import { cn } from "@/lib/cn"
 import { motion } from "framer-motion"
 import { CheckCircle } from "lucide-react"
+import { getStackIcon } from "@/lib/stack-icons"
 
 type StackCardProps = {
   id: string
@@ -11,11 +12,12 @@ type StackCardProps = {
   description: string
   isSelected: boolean
   isDefault?: boolean
+  isNew?: boolean
   incompatibleReason?: string | null
   onSelect: () => void
 }
 
-export function StackCard({ icon, label, description, isSelected, isDefault, incompatibleReason, onSelect }: StackCardProps) {
+export function StackCard({ icon, label, description, isSelected, isDefault, isNew, incompatibleReason, onSelect }: StackCardProps) {
   const isIncompatible = Boolean(incompatibleReason)
 
   return (
@@ -49,7 +51,14 @@ export function StackCard({ icon, label, description, isSelected, isDefault, inc
         aria-hidden
       />
 
-      {isDefault && !isSelected && (
+      {isNew && !isSelected && (
+        <span className="absolute right-3 top-3 rounded-full border border-[rgba(0,221,212,0.30)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[#00DDD4]/70"
+          style={{ background: "rgba(0,221,212,0.06)" }}
+        >
+          New
+        </span>
+      )}
+      {isDefault && !isSelected && !isNew && (
         <span className="absolute right-3 top-3 rounded-full border border-white/[0.09] px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white/25">
           Default
         </span>
@@ -61,7 +70,7 @@ export function StackCard({ icon, label, description, isSelected, isDefault, inc
         </span>
       )}
 
-      <span className="relative text-lg leading-none">{icon}</span>
+      <span className="relative">{getStackIcon(icon, 22)}</span>
       <span className="relative font-medium text-sm text-white/85">{label}</span>
       <span className="relative text-xs text-white/40 leading-relaxed">{description}</span>
       {incompatibleReason && (
