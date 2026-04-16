@@ -157,7 +157,11 @@ export function buildFolderTree(sel: Selections): TreeNode {
   const rootChildren: TreeNode[] = []
 
   if (sel.fe === "nextjs") {
-    rootChildren.push(d("src", srcChildren))
+    if (sel.src !== "no") {
+      rootChildren.push(d("src", srcChildren))
+    } else {
+      rootChildren.push(...srcChildren)
+    }
   }
 
   rootChildren.push(d("public", publicChildren))

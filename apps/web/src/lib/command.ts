@@ -11,6 +11,8 @@ export type Selections = {
   email:       string
   /** Comma-separated addon + skill IDs, e.g. "pwa,skill-careerops" */
   addons:      string
+  /** "yes" = use src/ directory layout (default), "no" = flat root layout */
+  src:         string
   pm:          string
 }
 
@@ -54,6 +56,8 @@ export function buildCommand(selections: Selections): string {
 
   if (projectAddons.length > 0) flags.push(`--addons ${projectAddons.join(",")}`)
   if (skillIds.length > 0)      flags.push(`--skills ${skillIds.join(",")}`)
+
+  if (selections.fe === "nextjs" && selections.src === "no") flags.push("--no-src-dir")
 
   flags.push(`--package-manager ${selections.pm}`)
 

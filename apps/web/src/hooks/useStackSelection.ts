@@ -15,6 +15,8 @@ export const defaultSelections = {
   email:       "resend",
   /** Comma-separated addon + skill IDs, e.g. "pwa,skill-careerops" */
   addons:      "none",
+  /** "yes" = use src/ directory layout (default), "no" = flat root layout */
+  src:         "yes",
   pm:          "pnpm",
 }
 
@@ -31,6 +33,7 @@ export function useStackSelection() {
     ui:          parseAsString.withDefault(defaultSelections.ui),
     email:       parseAsString.withDefault(defaultSelections.email),
     addons:      parseAsString.withDefault(defaultSelections.addons),
+    src:         parseAsString.withDefault(defaultSelections.src),
     pm:          parseAsString.withDefault(defaultSelections.pm),
   })
 }

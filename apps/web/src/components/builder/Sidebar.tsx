@@ -18,6 +18,22 @@ function Label({ children }: { children: React.ReactNode }) {
   )
 }
 
+function ToggleBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex-1 rounded-lg px-2 py-1.5 font-mono text-[10px] transition-all duration-150"
+      style={
+        active
+          ? { background: "rgba(0,221,212,0.12)", border: "1px solid rgba(0,221,212,0.35)", color: "#00DDD4" }
+          : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.35)" }
+      }
+    >
+      {children}
+    </button>
+  )
+}
+
 function Divider() {
   return <div className="h-px bg-white/[0.05]" />
 }
@@ -84,6 +100,19 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
         <Label>Project Name</Label>
         <Input value={selections.name} onChange={(e) => onChange({ name: e.target.value.replace(/\s/g, "-") })} placeholder="my-app" spellCheck={false} />
       </div>
+
+      {selections.fe === "nextjs" && (
+        <>
+          <Divider />
+          <div>
+            <Label>Project Layout</Label>
+            <div className="flex gap-1.5">
+              <ToggleBtn active={selections.src !== "no"} onClick={() => onChange({ src: "yes" })}>src/ dir</ToggleBtn>
+              <ToggleBtn active={selections.src === "no"}  onClick={() => onChange({ src: "no"  })}>root dir</ToggleBtn>
+            </div>
+          </div>
+        </>
+      )}
 
       <Divider />
 
