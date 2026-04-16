@@ -1,0 +1,75 @@
+---
+title: Skills
+description: Install curated AI coding agent skills from skills.sh directly during project scaffolding — enhance Claude Code, Cursor, GitHub Copilot and more.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+During `create-fusion-stack` scaffolding, you can select **skills** from [skills.sh](https://skills.sh/) — a curated marketplace of reusable AI agent capabilities. Skills are modular knowledge packages that enhance your AI coding agent (Claude Code, Cursor, GitHub Copilot, Cline, etc.) with procedural expertise.
+
+After project files are generated and dependencies installed, the CLI automatically runs:
+
+```bash
+npx skillsadd <owner/repo>
+```
+
+for each selected skill, installing it into your project's `.claude/` directory (or the equivalent for your agent).
+
+## Available Skills
+
+The following skills are offered during the interactive prompt:
+
+| Skill | Description |
+|-------|-------------|
+| **CareerOps** | Career management, job search automation, and interview prep |
+| **Next.js Patterns** | App Router patterns, server components, and best practices |
+| **React Best Practices** | Component design, hooks, performance, and testing |
+| **TypeScript Mastery** | Advanced types, generics, and tooling |
+| **PostgreSQL** | Query design, indexing, schema normalization |
+| **Testing (Vitest / Playwright)** | Unit, integration, and end-to-end testing patterns |
+| **Tailwind CSS** | Utility-first styling and design systems |
+
+## Installing Skills Manually
+
+Skills can be installed at any time after project creation:
+
+```bash
+# Install a single skill
+npx skillsadd careerops/career-ops
+
+# Install multiple skills
+npx skillsadd nextjs-patterns/skills
+npx skillsadd typescript-skills/mastery
+```
+
+## Supported Agents
+
+Skills work with all major AI coding agents:
+
+- Claude Code
+- Cursor
+- GitHub Copilot
+- Cline
+- Continue
+- Windsurf
+- And 15+ more
+
+## How Skills Work
+
+A skill is a small repository containing structured knowledge — prompts, patterns, and procedures — that your AI agent loads into context when relevant. Once installed, the agent automatically applies the skill's guidance without any manual configuration.
+
+Browse the full catalog at [skills.sh](https://skills.sh/).
+
+## Via CLI Flags
+
+Skills can also be specified in flag mode:
+
+```bash
+pnpm create fusion-stack@latest my-app \
+  --frontend nextjs \
+  --database postgresql \
+  --orm drizzle \
+  --skills "careerops/career-ops,nextjs-patterns/skills"
+```

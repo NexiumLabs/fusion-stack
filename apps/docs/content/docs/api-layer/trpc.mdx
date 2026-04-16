@@ -1,0 +1,164 @@
+---
+title: tRPC
+description: Add end-to-end type-safe APIs to your Next.js or Hono backend — no schemas, no code generation, just TypeScript.
+---
+
+## Overview
+
+**tRPC** lets you build fully type-safe APIs without a schema language or code generation step. Your router is defined in TypeScript and the client infers all types automatically — if you rename a procedure or change its input, TypeScript will catch the mismatch instantly.
+
+Fusion Stack scaffolds a complete tRPC v11 setup on top of your chosen backend.
+
+## Scaffolded Structure
+
+```
+src/
+  server/
+    trpc.ts             # initTRPC — exports router and publicProcedure
+    routers/
+      index.ts          # Root appRouter with a sample hello procedure
+    trpc-hono.ts        # Hono adapter helper (only used when backend = Hono)
+  app/
+    api/
+      trpc/
+        [trpc]/
+          route.ts      # Next.js App Router handler
+  lib/
+    trpc/
+      client.ts         # Vanilla tRPC client (server components / server actions)
+      react.ts          # createTRPCReact hook factory
+      provider.tsx      # TRPCProvider — wraps QueryClient + tRPC client
+```
+
+## Setup
+
+### 1. Wrap your root layout
+
+Add `TRPCProvider` to `src/app/layout.tsx`:
+
+```tsx
+import { TRPCProvider } from '@/lib/trpc/provider'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        <TRPCProvider>{children}</TRPCProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+### 2. Call procedures from React components
+
+Use the generated React hooks to call your procedures:
+
+```tsx
+'use client'
+
+import { trpcReact } from '@/lib/trpc/react'
+
+export function Hello() {
+  const { data } = trpcReact.hello.useQuery({ name: 'fusion-stack' })
+  return <p>{data?.greeting}</p>
+}
+```
+
+### 3. Call from Server Components
+
+Use the vanilla client for server-side calls:
+
+```ts
+import { trpc } from '@/lib/trpc/client'
+
+export default async function Page() {
+  const data = await trpc.hello.query({ name: 'world' })
+  return <p>{data.greeting}</p>
+}
+```
+
+## Adding Procedures
+
+Define new procedures in `src/server/routers/index.ts`:
+
+```ts
+import { z } from 'zod'
+import { router, publicProcedure } from '../trpc'
+
+export const appRouter = router({
+  hello: publicProcedure
+    .input(z.object({ name: z.string().optional() }))
+    .query(({ input }) => {
+      return { greeting: `Hello, ${input.name ?? 'world'}!` }
+    }),
+
+  createPost: publicProcedure
+    .input(z.object({ title: z.string(), body: z.string() }))
+    .mutation(async ({ input }) => {
+      const post = await db.post.create({ data: input })
+      return post
+    }),
+})
+
+export type AppRouter = typeof appRouter
+```
+
+## Hono Backend
+
+When your backend is **Hono**, mount tRPC on the Hono server instead of (or in addition to) the Next.js route handler:
+
+```ts
+// src/server/index.ts
+import { Hono } from 'hono'
+import { serve } from '@hono/node-server'
+import { trpcHonoHandler } from './trpc-hono'
+
+const app = new Hono()
+
+app.get('/health', (c) => c.json({ status: 'ok' }))
+app.use('/trpc/*', trpcHonoHandler)
+
+serve({ fetch: app.fetch, port: 3001 })
+```
+
+Then update the tRPC client URL to point at the Hono server:
+
+```ts
+// src/lib/trpc/client.ts
+httpBatchLink({ url: 'http://localhost:3001/trpc', transformer: superjson })
+```
+
+## Adding Authentication Context
+
+Pass auth context to procedures via `createContext`:
+
+```ts
+// src/app/api/trpc/[trpc]/route.ts
+import { auth } from '@clerk/nextjs/server'
+
+const handler = (req: Request) =>
+  fetchRequestHandler({
+    endpoint: '/api/trpc',
+    req,
+    router: appRouter,
+    createContext: async () => {
+      const { userId } = await auth()
+      return { userId }
+    },
+  })
+```
+
+Access it in procedures:
+
+```ts
+const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.userId) throw new TRPCError({ code: 'UNAUTHORIZED' })
+  return next({ ctx: { userId: ctx.userId } })
+})
+```
+
+## Compatibility
+
+- ✅ Works with: Next.js API Routes, Hono, Clerk, WorkOS, Better Auth, shadcn/ui
+- ❌ Not compatible with: Convex backend (Convex has its own type-safe RPC system)

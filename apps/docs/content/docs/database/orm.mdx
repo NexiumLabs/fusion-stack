@@ -1,0 +1,110 @@
+---
+title: ORM
+description: Choose between Drizzle, Prisma, and Mongoose — each scaffolded and pre-configured for your selected database.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+After selecting a database, you choose an ORM to handle queries and schema management. Fusion Stack scaffolds the client, config, and schema stubs for your chosen combination.
+
+## Drizzle
+
+**Best for:** PostgreSQL, MySQL, SQLite — SQL-like API with full TypeScript inference.
+
+Drizzle generates zero overhead at runtime — queries compile directly to SQL with no reflection or proxies.
+
+```ts
+// Query example
+const users = await db
+  .select()
+  .from(schema.users)
+  .where(eq(schema.users.email, 'user@example.com'))
+  .limit(1)
+```
+
+**Scripts added to `package.json`:**
+
+```json
+"db:push":   "drizzle-kit push",
+"db:studio": "drizzle-kit studio"
+```
+
+**Compatible databases:** PostgreSQL, MySQL, SQLite
+
+---
+
+## Prisma
+
+**Best for:** Any database — schema-first, migration-driven, with a great developer experience.
+
+Prisma uses a declarative `schema.prisma` file. The `{{PRISMA_PROVIDER}}` token is replaced at generation time with your chosen database provider.
+
+```prisma
+// prisma/schema.prisma (example for PostgreSQL)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+```
+
+The scaffolded `src/db/index.ts` uses the global singleton pattern to prevent multiple `PrismaClient` instances during hot-reloads in development:
+
+```ts
+import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+export const db = globalForPrisma.prisma ?? new PrismaClient()
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+```
+
+**Scripts added:**
+
+```json
+"db:push":      "prisma db push",
+"db:studio":    "prisma studio",
+"postinstall":  "prisma generate"
+```
+
+**Compatible databases:** PostgreSQL, MySQL, SQLite, MongoDB
+
+---
+
+## Mongoose
+
+**Best for:** MongoDB — the canonical Node.js ODM with schema validation and middleware hooks.
+
+```ts
+// src/db/models/user.ts
+import { Schema, model, models } from 'mongoose'
+
+const UserSchema = new Schema({
+  email: { type: String, required: true, unique: true },
+  name:  String,
+}, { timestamps: true })
+
+export const User = models.User ?? model('User', UserSchema)
+```
+
+**Compatible databases:** MongoDB only
+
+---
+
+## Compatibility Matrix
+
+| ORM | PostgreSQL | MySQL | SQLite | MongoDB |
+|-----|:---:|:---:|:---:|:---:|
+| Drizzle | ✓ | ✓ | ✓ | — |
+| Prisma | ✓ | ✓ | ✓ | ✓ |
+| Mongoose | — | — | — | ✓ |

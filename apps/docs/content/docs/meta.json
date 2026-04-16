@@ -1,4 +1,4 @@
 {
   "title": "Fusion Stack",
-  "pages": ["index", "frontend", "backend", "database", "auth", "ui", "email"]
+  "pages": ["index", "frontend", "backend", "api-layer", "database", "auth", "ui", "email", "addons", "skills"]
 }

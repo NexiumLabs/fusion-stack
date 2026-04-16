@@ -1,0 +1,99 @@
+---
+title: MongoDB
+description: Set up MongoDB with Mongoose for elegant object modeling, or Prisma for type-safe queries.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+Selecting **MongoDB** scaffolds a connection helper and a models barrel. Use **Mongoose** for the classic ODM experience, or **Prisma** if you prefer a schema-first, type-safe approach.
+
+## Scaffolded Files
+
+```
+src/
+└── db/
+    ├── index.ts        ← connection helper (cached across HMR)
+    └── models/
+        └── index.ts    ← models barrel export
+```
+
+## Connection Helper (Mongoose)
+
+```ts
+// src/db/index.ts
+import mongoose from 'mongoose'
+
+const MONGODB_URI = process.env.MONGODB_URI!
+
+const cached = globalThis as typeof globalThis & {
+  mongooseConn: typeof mongoose | null
+  mongoosePromise: Promise<typeof mongoose> | null
+}
+
+cached.mongooseConn = cached.mongooseConn ?? null
+cached.mongoosePromise = cached.mongoosePromise ?? null
+
+export async function connectDB(): Promise<typeof mongoose> {
+  if (cached.mongooseConn) return cached.mongooseConn
+  if (!cached.mongoosePromise) {
+    cached.mongoosePromise = mongoose.connect(MONGODB_URI)
+  }
+  cached.mongooseConn = await cached.mongoosePromise
+  return cached.mongooseConn
+}
+```
+
+## Defining a Model
+
+```ts
+// src/db/models/user.ts
+import mongoose, { Schema, model, models } from 'mongoose'
+
+const UserSchema = new Schema({
+  email: { type: String, required: true, unique: true },
+  name:  { type: String },
+}, { timestamps: true })
+
+export const User = models.User ?? model('User', UserSchema)
+```
+
+```ts
+// src/db/models/index.ts
+export { User } from './user'
+```
+
+## Using the Connection
+
+Call `connectDB()` at the top of any Server Action or Route Handler:
+
+```ts
+import { connectDB } from '@/db'
+import { User } from '@/db/models'
+
+export async function getUser(email: string) {
+  await connectDB()
+  return User.findOne({ email })
+}
+```
+
+## With Prisma
+
+Prisma supports MongoDB natively with the `mongodb` provider. The scaffolded `prisma/schema.prisma` will contain:
+
+```prisma
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+```
+
+## Environment Variables
+
+```bash
+# .env.local
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/<db>?retryWrites=true&w=majority
+```
+
+MongoDB Atlas offers a free M0 cluster — create one at [cloud.mongodb.com](https://cloud.mongodb.com).

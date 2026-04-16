@@ -1,0 +1,95 @@
+---
+title: PostgreSQL
+description: Set up a PostgreSQL database with Drizzle or Prisma — choose a provider like Neon or Supabase, or bring your own connection string.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+Selecting **PostgreSQL** as your database scaffolds a fully configured connection layer using your chosen ORM (Drizzle or Prisma). PostgreSQL is the recommended database for most production workloads — battle-tested, standards-compliant, and supported by every major hosting platform.
+
+## Scaffolded Files
+
+```
+src/
+└── db/
+    ├── index.ts     ← database client
+    └── schema.ts    ← table/column definitions (Drizzle) or models
+prisma/
+└── schema.prisma   ← data model (Prisma only)
+drizzle.config.ts   ← Drizzle dialect config (Drizzle only)
+```
+
+## With Drizzle
+
+```ts
+// src/db/index.ts
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
+import * as schema from './schema'
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL! })
+export const db = drizzle(pool, { schema })
+```
+
+```ts
+// src/db/schema.ts
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id:        serial('id').primaryKey(),
+  email:     text('email').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+```
+
+Push schema changes:
+
+```bash
+pnpm db:push
+# or open the visual editor
+pnpm db:studio
+```
+
+## With Prisma
+
+```prisma
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+```
+
+Generate client and push schema:
+
+```bash
+npx prisma generate
+npx prisma db push
+# or open Prisma Studio
+npx prisma studio
+```
+
+## Environment Variables
+
+```bash
+# .env.local
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+```
+
+## Choosing a Provider
+
+| Provider | Best for |
+|----------|----------|
+| **Neon** | Serverless & edge — instant branching, generous free tier |
+| **Supabase** | When you also want auth, storage, or realtime out of the box |
+| **Self-hosted** | Docker, Railway, Render, or any Postgres-compatible host |
+
+See [DB Providers](/docs/database/providers) for setup details.

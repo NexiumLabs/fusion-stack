@@ -1,0 +1,104 @@
+---
+title: Next.js API Routes
+description: Use Next.js App Router route handlers as your backend — no separate server process, full-stack in a single project.
+---
+
+## Overview
+
+**Next.js API Routes** lets you use the Next.js App Router as your backend. Route handlers live inside `src/app/api/` alongside your frontend code — no separate server to run, no extra port to manage.
+
+This is ideal when you want a full-stack Next.js project without the overhead of a dedicated backend service.
+
+## Scaffolded Structure
+
+```
+src/
+  app/
+    api/
+      health/
+        route.ts    # GET /api/health — starter endpoint
+```
+
+## The Generated Handler
+
+```ts
+// src/app/api/health/route.ts
+import { NextResponse } from 'next/server'
+
+export function GET() {
+  return NextResponse.json({ status: 'ok' })
+}
+```
+
+## Adding Route Handlers
+
+Create files at any path under `src/app/api/` — the file name must be `route.ts`:
+
+```ts
+// src/app/api/posts/route.ts
+import { NextResponse } from 'next/server'
+
+export async function GET() {
+  const posts = await fetchPosts()
+  return NextResponse.json(posts)
+}
+
+export async function POST(req: Request) {
+  const body = await req.json()
+  const post = await createPost(body)
+  return NextResponse.json(post, { status: 201 })
+}
+```
+
+## Dynamic Segments
+
+```ts
+// src/app/api/posts/[id]/route.ts
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const post = await fetchPost(id)
+  if (!post) return new Response('Not found', { status: 404 })
+  return Response.json(post)
+}
+```
+
+## Calling from the Frontend
+
+Call your route handlers from server components, client components, or server actions using plain `fetch`:
+
+```ts
+// Server component
+const res = await fetch('/api/posts')
+const posts = await res.json()
+```
+
+```ts
+// Client component
+async function createPost(data: PostInput) {
+  const res = await fetch('/api/posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return res.json()
+}
+```
+
+## Pairing with an API Layer
+
+For end-to-end type safety, combine Next.js API Routes with **tRPC** or **oRPC** — both scaffold their handlers directly inside `src/app/api/`:
+
+| API Layer | Handler location |
+|-----------|-----------------|
+| tRPC | `src/app/api/trpc/[trpc]/route.ts` |
+| oRPC | `src/app/api/orpc/[...orpc]/route.ts` |
+
+See the [tRPC](/docs/api-layer/trpc) and [oRPC](/docs/api-layer/orpc) docs for setup details.
+
+## Compatibility
+
+- ✅ Works with: Clerk, WorkOS, Better Auth, Resend, shadcn/ui, tRPC, oRPC
+- ❌ Convex DB is **not available** with Next.js API Routes — use a standard database (PostgreSQL, MySQL, SQLite, MongoDB)

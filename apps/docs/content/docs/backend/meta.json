@@ -1,4 +1,4 @@
 {
   "title": "Backend",
-  "pages": ["convex", "hono"]
+  "pages": ["convex", "hono", "nextjs"]
 }

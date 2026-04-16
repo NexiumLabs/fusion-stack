@@ -1,0 +1,104 @@
+---
+title: DB Providers
+description: Hosted database providers pre-configured in fusion-stack — Neon, Supabase, and PlanetScale.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+After selecting your database and ORM, you can optionally choose a **hosted provider**. Each provider adds its serverless driver and pre-fills environment variable placeholders in `.env.example`.
+
+## Neon
+
+**Database:** PostgreSQL  
+**Best for:** Serverless and edge deployments — instant cold starts, branching per PR.
+
+Neon's serverless driver replaces the standard `pg` pool with an HTTP-based connection that works in edge runtimes without WebSockets.
+
+```ts
+// src/db/index.ts (Neon + Drizzle)
+import { drizzle } from 'drizzle-orm/neon-http'
+import { neon } from '@neondatabase/serverless'
+import * as schema from './schema'
+
+const sql = neon(process.env.DATABASE_URL!)
+export const db = drizzle(sql, { schema })
+```
+
+**Environment variables:**
+
+```bash
+DATABASE_URL=postgresql://<user>:<password>@<host>.neon.tech/<db>?sslmode=require
+```
+
+Create a project at [console.neon.tech](https://console.neon.tech) — the free tier includes 0.5 GB storage and unlimited branches.
+
+---
+
+## Supabase
+
+**Database:** PostgreSQL  
+**Best for:** When you also need auth, object storage, realtime subscriptions, or a built-in dashboard.
+
+Supabase exposes your Postgres database via two connection strings:
+
+- `DATABASE_URL` — direct connection for migrations and Prisma/Drizzle
+- `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` — for the Supabase JS client
+
+```ts
+// src/lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+```
+
+**Environment variables:**
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+DATABASE_URL=postgresql://postgres:<password>@<host>:5432/postgres
+```
+
+Create a project at [supabase.com/dashboard](https://supabase.com/dashboard).
+
+---
+
+## PlanetScale
+
+**Database:** MySQL  
+**Best for:** MySQL workloads that need schema branching, zero-downtime deployments, and connection pooling at the edge.
+
+PlanetScale's `@planetscale/database` driver uses HTTP — no persistent connections, works on Vercel Edge, Cloudflare Workers, and similar runtimes.
+
+```ts
+// src/db/index.ts (PlanetScale + Drizzle)
+import { drizzle } from 'drizzle-orm/planetscale-serverless'
+import { connect } from '@planetscale/database'
+import * as schema from './schema'
+
+const connection = connect({ url: process.env.DATABASE_URL! })
+export const db = drizzle(connection, { schema })
+```
+
+**Environment variables:**
+
+```bash
+DATABASE_URL=mysql://<user>:<password>@<host>.connect.psdb.cloud/<db>?ssl={"rejectUnauthorized":true}
+```
+
+Create a database at [app.planetscale.com](https://app.planetscale.com).
+
+---
+
+## Compatibility
+
+| Provider | Compatible DB | Driver |
+|----------|--------------|--------|
+| Neon | PostgreSQL | `@neondatabase/serverless` |
+| Supabase | PostgreSQL | `@supabase/supabase-js` |
+| PlanetScale | MySQL | `@planetscale/database` |

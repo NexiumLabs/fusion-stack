@@ -1,0 +1,72 @@
+---
+title: SQLite
+description: A lightweight embedded database — ideal for local development, prototypes, and edge deployments with Drizzle.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+**SQLite** is a file-based embedded database that requires zero provisioning. It's the fastest path from zero to working data layer in local development, and increasingly useful in edge runtimes (Cloudflare D1, Turso).
+
+SQLite is supported by **Drizzle** and **Prisma** — no hosted provider is needed.
+
+## Scaffolded Files
+
+```
+src/
+└── db/
+    ├── index.ts     ← database client (better-sqlite3)
+    └── schema.ts    ← table definitions
+drizzle.config.ts    ← SQLite dialect config
+local.db             ← created automatically on first push
+```
+
+## Client Setup
+
+```ts
+// src/db/index.ts
+import { drizzle } from 'drizzle-orm/better-sqlite3'
+import Database from 'better-sqlite3'
+import * as schema from './schema'
+
+const sqlite = new Database('local.db')
+export const db = drizzle(sqlite, { schema })
+```
+
+## Schema Example
+
+```ts
+// src/db/schema.ts
+import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core'
+
+export const users = sqliteTable('users', {
+  id:    integer('id').primaryKey({ autoIncrement: true }),
+  email: text('email').notNull().unique(),
+  name:  text('name'),
+})
+```
+
+## Push Schema
+
+```bash
+pnpm db:push
+pnpm db:studio   # open Drizzle Studio
+```
+
+## With Prisma
+
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = "file:./local.db"
+}
+```
+
+## No Provider Required
+
+SQLite runs entirely locally — no connection string, no external service. For production, consider:
+
+- **Cloudflare D1** — SQLite-compatible, runs on the edge
+- **Turso** — libSQL-based, globally distributed SQLite
+- **Bun SQLite** — if your runtime is Bun

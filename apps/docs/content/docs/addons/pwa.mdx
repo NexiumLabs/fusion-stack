@@ -1,0 +1,143 @@
+---
+title: PWA
+description: Pre-wired Progressive Web App support — web manifest, service worker, push notifications, and security headers following the official Next.js guide.
+---
+
+> **New** — Available as of the latest `create-fusion-stack` release.
+
+## Overview
+
+Selecting the **PWA** addon scaffolds everything needed to make your Next.js app installable to home screens and capable of sending push notifications. The setup follows the [official Next.js PWA guide](https://nextjs.org/docs/app/guides/pwa) exactly.
+
+**Requirements:** Next.js frontend (incompatible with "No Frontend").
+
+## Scaffolded Files
+
+```
+src/app/
+├── manifest.ts    ← web app manifest (name, icons, display mode)
+└── actions.ts     ← server actions: subscribe, unsubscribe, sendNotification
+public/
+├── sw.js          ← service worker (push events + notification clicks)
+├── icon-192x192.png  ← app icon placeholder — replace with your brand
+├── icon-512x512.png  ← app icon placeholder
+└── badge.png         ← notification badge placeholder
+next.config.ts         ← overrides with security headers for all routes + sw.js
+.env.example           ← VAPID key placeholders
+```
+
+## Web Manifest
+
+```ts
+// src/app/manifest.ts
+import type { MetadataRoute } from 'next'
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'My App',
+    short_name: 'My App',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#000000',
+    icons: [
+      { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  }
+}
+```
+
+## Push Notifications
+
+The scaffolded `src/app/actions.ts` contains three server actions:
+
+| Action | Purpose |
+|--------|---------|
+| `subscribeUser(sub)` | Store push subscription (add DB persistence for production) |
+| `unsubscribeUser()` | Remove push subscription |
+| `sendNotification(message)` | Send a push message via `web-push` |
+
+## Service Worker
+
+The service worker handles incoming push messages and notification clicks:
+
+```js
+// public/sw.js
+self.addEventListener('push', function (event) {
+  if (event.data) {
+    const data = event.data.json()
+    event.waitUntil(
+      self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: data.icon || '/icon-192x192.png',
+        badge: '/badge.png',
+      })
+    )
+  }
+})
+
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close()
+  event.waitUntil(clients.openWindow('/'))
+})
+```
+
+## Security Headers
+
+The scaffolded `next.config.ts` adds headers following Next.js security recommendations:
+
+**All routes:**
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+
+**`/sw.js` specifically:**
+- `Content-Type: application/javascript; charset=utf-8`
+- `Cache-Control: no-cache, no-store, must-revalidate`
+- `Content-Security-Policy: default-src 'self'; script-src 'self'`
+
+## Setup Steps
+
+### 1. Generate VAPID Keys
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+### 2. Add to `.env.local`
+
+```bash
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_public_key_here
+VAPID_PRIVATE_KEY=your_private_key_here
+```
+
+### 3. Replace Icon Placeholders
+
+Generate proper icons using any favicon generator and place them in `/public/`:
+- `icon-192x192.png` (192×192 px)
+- `icon-512x512.png` (512×512 px)
+- `badge.png` (96×96 px, monochrome)
+
+### 4. Test Locally with HTTPS
+
+```bash
+next dev --experimental-https
+```
+
+Browsers require HTTPS for service workers (except `localhost`).
+
+### 5. Production Push Subscriptions
+
+The scaffolded `actions.ts` stores subscriptions in memory — fine for development. For production, persist subscriptions to your database and load them on `sendNotification`:
+
+```ts
+// Example with Prisma
+export async function subscribeUser(sub: PushSubscription) {
+  await db.pushSubscription.upsert({
+    where:  { endpoint: sub.endpoint },
+    update: { keys: sub.keys },
+    create: { endpoint: sub.endpoint, keys: sub.keys, userId: getSessionUserId() },
+  })
+}
+```

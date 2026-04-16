@@ -1,4 +1,4 @@
 {
   "title": "Database",
-  "pages": ["convex"]
+  "pages": ["convex", "postgresql", "mongodb", "mysql", "sqlite", "orm", "providers"]
 }

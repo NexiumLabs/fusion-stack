@@ -1,0 +1,161 @@
+---
+title: oRPC
+description: OpenAPI-compatible, Zod-first RPC for Next.js — type-safe procedures that double as a documented REST API.
+---
+
+## Overview
+
+**oRPC** is a type-safe RPC library built around Zod and the OpenAPI standard. Every procedure you define is automatically a typed, validating endpoint — and you can optionally generate a full OpenAPI spec from your router with no extra work.
+
+Fusion Stack scaffolds a complete oRPC setup inside your Next.js App Router.
+
+## Scaffolded Structure
+
+```
+src/
+  server/
+    orpc.ts             # Base procedure builder (exports `pub`)
+    routers/
+      index.ts          # Root appRouter with a sample hello procedure
+  app/
+    api/
+      orpc/
+        [...orpc]/
+          route.ts      # Catch-all App Router handler
+  lib/
+    orpc/
+      client.ts         # Typed oRPC client
+      provider.tsx      # ORPCProvider — wraps TanStack QueryClientProvider
+```
+
+## Setup
+
+### 1. Wrap your root layout
+
+Add `ORPCProvider` to `src/app/layout.tsx`:
+
+```tsx
+import { ORPCProvider } from '@/lib/orpc/provider'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        <ORPCProvider>{children}</ORPCProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+### 2. Call procedures from React components
+
+oRPC's React Query utilities create hooks bound to the typed client:
+
+```tsx
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+import { orpc } from '@/lib/orpc/client'
+
+export function Hello() {
+  const { data } = useQuery(orpc.hello.queryOptions({ name: 'fusion-stack' }))
+  return <p>{data?.greeting}</p>
+}
+```
+
+### 3. Call from Server Components
+
+Use the typed client directly for server-side calls:
+
+```ts
+import { orpc } from '@/lib/orpc/client'
+
+export default async function Page() {
+  const data = await orpc.hello({ name: 'world' })
+  return <p>{data.greeting}</p>
+}
+```
+
+## Adding Procedures
+
+Define new procedures in `src/server/routers/index.ts`:
+
+```ts
+import { z } from 'zod'
+import { pub } from '../orpc'
+
+export const appRouter = {
+  hello: pub
+    .input(z.object({ name: z.string().optional() }))
+    .handler(({ input }) => {
+      return { greeting: `Hello, ${input.name ?? 'world'}!` }
+    }),
+
+  createPost: pub
+    .input(z.object({ title: z.string(), body: z.string() }))
+    .handler(async ({ input }) => {
+      const post = await db.post.create({ data: input })
+      return post
+    }),
+}
+
+export type AppRouter = typeof appRouter
+```
+
+## Middleware
+
+Add reusable middleware to the base procedure builder:
+
+```ts
+// src/server/orpc.ts
+import { os } from '@orpc/server'
+
+// Authenticated procedure builder
+export const pub = os
+
+export const authed = os.use(async ({ context, next }) => {
+  const user = await getSessionUser()
+  if (!user) throw new ORPCError('UNAUTHORIZED')
+  return next({ context: { ...context, user } })
+})
+```
+
+Use it in your router:
+
+```ts
+import { authed } from '../orpc'
+
+export const appRouter = {
+  me: authed.handler(({ context }) => context.user),
+}
+```
+
+## OpenAPI Spec Generation (optional)
+
+oRPC can generate a full OpenAPI 3.1 spec from your router — useful for SDK generation or documentation:
+
+```ts
+// scripts/generate-openapi.ts
+import { generateOpenAPI } from '@orpc/openapi'
+import { appRouter } from '../src/server/routers/index'
+
+const spec = generateOpenAPI({
+  router: appRouter,
+  info: { title: 'My API', version: '1.0.0' },
+})
+
+console.log(JSON.stringify(spec, null, 2))
+```
+
+Install the optional package:
+
+```bash
+pnpm add @orpc/openapi
+```
+
+## Compatibility
+
+- ✅ Works with: Next.js API Routes, Clerk, WorkOS, Better Auth, shadcn/ui
+- ❌ Not compatible with: Convex backend (Convex has its own type-safe RPC system)
+- ℹ️ Hono support: mount the `RPCHandler` on a Hono route using `@orpc/server/fetch`
