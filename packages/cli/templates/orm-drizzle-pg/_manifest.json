@@ -1,0 +1,4 @@
+{
+  "name": "orm-drizzle-pg",
+  "description": "Drizzle ORM with PostgreSQL dialect — schema, client, drizzle.config.ts"
+}

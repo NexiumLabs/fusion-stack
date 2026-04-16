@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.43.1",
+    "better-sqlite3": "^11.10.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.1",
+    "@types/better-sqlite3": "^7.6.13"
+  }
+}

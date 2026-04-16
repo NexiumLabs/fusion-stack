@@ -1,0 +1,4 @@
+{
+  "name": "orm-drizzle-mysql",
+  "description": "Drizzle ORM with MySQL dialect — schema, client, drizzle.config.ts"
+}

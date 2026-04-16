@@ -1,0 +1,4 @@
+{
+  "name": "orm-drizzle-sqlite",
+  "description": "Drizzle ORM with SQLite dialect — schema, client, drizzle.config.ts"
+}

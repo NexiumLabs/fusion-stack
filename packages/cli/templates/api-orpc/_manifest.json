@@ -1,0 +1,4 @@
+{
+  "name": "api-orpc",
+  "description": "oRPC — OpenAPI-compatible, Zod-first RPC layer"
+}

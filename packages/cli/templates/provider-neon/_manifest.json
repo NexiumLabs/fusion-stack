@@ -1,0 +1,4 @@
+{
+  "name": "provider-neon",
+  "description": "Neon serverless PostgreSQL driver and environment variables"
+}

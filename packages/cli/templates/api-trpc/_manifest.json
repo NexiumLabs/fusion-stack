@@ -1,0 +1,4 @@
+{
+  "name": "api-trpc",
+  "description": "tRPC end-to-end type-safe API layer"
+}

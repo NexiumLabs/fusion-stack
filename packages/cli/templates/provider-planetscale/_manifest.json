@@ -1,0 +1,4 @@
+{
+  "name": "provider-planetscale",
+  "description": "PlanetScale serverless MySQL driver and environment variables"
+}

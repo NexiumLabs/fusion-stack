@@ -1,0 +1,4 @@
+{
+  "name": "provider-supabase",
+  "description": "Supabase client helper and environment variables"
+}

@@ -1,0 +1,4 @@
+{
+  "name": "addon-pwa",
+  "description": "Progressive Web App — manifest, service worker, push notifications, security headers"
+}

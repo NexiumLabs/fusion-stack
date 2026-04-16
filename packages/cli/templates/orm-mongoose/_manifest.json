@@ -1,0 +1,4 @@
+{
+  "name": "orm-mongoose",
+  "description": "Mongoose ODM for MongoDB — connection helper and models barrel"
+}

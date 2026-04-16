@@ -1,0 +1,4 @@
+{
+  "name": "orm-prisma",
+  "description": "Prisma ORM — schema.prisma with token substitution, PrismaClient singleton"
+}
