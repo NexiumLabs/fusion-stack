@@ -6,6 +6,7 @@ import pc from "picocolors"
 import { mergePackageJsons } from "./merge.js"
 import { runInstall } from "./install.js"
 import { printNextSteps } from "./postSteps.js"
+import { installSkills } from "./installSkills.js"
 import type { Selections } from "./types.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -17,20 +18,40 @@ const TEMPLATES_DIR = path.resolve(__dirname, "..", "templates")
 const TEXT_EXTENSIONS = new Set([
   ".ts", ".tsx", ".js", ".mjs", ".cjs",
   ".json", ".md", ".mdx", ".css", ".html",
-  ".env", ".example", ".gitignore", ".txt",
+  ".env", ".example", ".gitignore", ".txt", ".prisma",
 ])
 
 function resolveSlices(s: Selections): string[] {
   const slices: string[] = ["base"]
   if (s.fe === "nextjs") slices.push("fe-nextjs")
   if (s.be === "convex") slices.push("be-convex")
-  if (s.be === "hono") slices.push("be-hono")
+  if (s.be === "hono")   slices.push("be-hono")
+  if (s.be === "nextjs") slices.push("be-nextjs")
+  if (s.apiLayer === "trpc") slices.push("api-trpc")
+  if (s.apiLayer === "orpc") slices.push("api-orpc")
   if (s.db === "convex") slices.push("db-convex")
-  if (s.auth === "clerk") slices.push("auth-clerk")
-  if (s.auth === "better-auth") slices.push("auth-better-auth")
-  if (s.auth === "workos") slices.push("auth-workos")
-  if (s.ui === "shadcn") slices.push("ui-shadcn")
-  if (s.email === "resend") slices.push("email-resend")
+
+  // ORM slices (Drizzle is dialect-specific, Prisma/Mongoose are universal)
+  if (s.db === "postgresql" && s.orm === "drizzle") slices.push("orm-drizzle-pg")
+  if (s.db === "mysql"      && s.orm === "drizzle") slices.push("orm-drizzle-mysql")
+  if (s.db === "sqlite"     && s.orm === "drizzle") slices.push("orm-drizzle-sqlite")
+  if (s.orm === "prisma")                           slices.push("orm-prisma")
+  if (s.orm === "mongoose")                         slices.push("orm-mongoose")
+
+  // Provider overlays (applied after ORM so they can add provider-specific clients)
+  if (s.dbProvider === "supabase")    slices.push("provider-supabase")
+  if (s.dbProvider === "neon")        slices.push("provider-neon")
+  if (s.dbProvider === "planetscale") slices.push("provider-planetscale")
+
+  if (s.auth === "clerk")        slices.push("auth-clerk")
+  if (s.auth === "better-auth")  slices.push("auth-better-auth")
+  if (s.auth === "workos")       slices.push("auth-workos")
+  if (s.ui === "shadcn")         slices.push("ui-shadcn")
+  if (s.email === "resend")      slices.push("email-resend")
+
+  // Addons (last — can override next.config.ts etc.)
+  if (s.addons.includes("pwa")) slices.push("addon-pwa")
+
   return slices
 }
 
@@ -45,7 +66,6 @@ function applyTokens(content: string, tokens: Record<string, string>): string {
 function isTextFile(filePath: string): boolean {
   const ext = path.extname(filePath)
   if (ext === "") {
-    // Extensionless files like .gitignore, .env.example, .env
     const base = path.basename(filePath)
     return base.startsWith(".") || base === "Makefile"
   }
@@ -79,6 +99,16 @@ async function collectEnvExamples(sliceDirs: string[]): Promise<string> {
     }
   }
   return parts.join("\n\n")
+}
+
+function prismaProvider(db: Selections["db"]): string {
+  const map: Partial<Record<Selections["db"], string>> = {
+    postgresql: "postgresql",
+    mongodb:    "mongodb",
+    mysql:      "mysql",
+    sqlite:     "sqlite",
+  }
+  return map[db] ?? "postgresql"
 }
 
 export async function generate(s: Selections, targetDir: string): Promise<void> {
@@ -128,7 +158,8 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
   // 7. Merge .env.example files
   const mergedEnv = await collectEnvExamples(sliceDirs)
   if (mergedEnv) {
-    await fse.writeFile(path.join(targetDir, ".env.example"), mergedEnv + "\n", "utf-8")
+    const header = "# Copy this file to .env.local and fill in your values\n\n"
+    await fse.writeFile(path.join(targetDir, ".env.example"), header + mergedEnv + "\n", "utf-8")
   }
 
   // 8. Write merged package.json
@@ -140,9 +171,10 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
 
   // 9. Apply token substitution across all text files
   const tokens: Record<string, string> = {
-    PROJECT_NAME: s.projectName,
-    PM: s.pm,
-    PM_RUN: s.pm === "pnpm" ? "pnpm" : "npm run",
+    PROJECT_NAME:    s.projectName,
+    PM:              s.pm,
+    PM_RUN:          s.pm === "pnpm" ? "pnpm" : "npm run",
+    PRISMA_PROVIDER: prismaProvider(s.db),
   }
   await walkAndApplyTokens(targetDir, tokens)
 
@@ -153,6 +185,9 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
 
   // 11. Print next steps
   printNextSteps(s)
+
+  // 12. Install skills
+  await installSkills(s.skills, targetDir)
 
   clack.outro(`${pc.green("Done!")} Happy building. ${pc.dim("— NexiumLabs")}`)
 }
