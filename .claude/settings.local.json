@@ -36,7 +36,15 @@
       "Bash(curl -s \"https://raw.githubusercontent.com/get-convex/convex-demos/main/logo.svg\")",
       "Bash(curl -s \"https://convex.dev/_next/static/media/\")",
       "Bash(curl -sL \"https://convex.dev/brand\" --max-time 15)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(xargs -I {} sh -c 'echo \"=== {} ===\" && find \"{}\" -maxdepth 3 -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) 2>/dev/null | head -10')",
+      "Bash(xargs grep:*)",
+      "Bash(xargs cat:*)",
+      "WebFetch(domain:skills.sh)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm --filter web exec tsc --noEmit)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(xargs ls:*)"
     ]
   }
 }
