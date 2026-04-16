@@ -217,6 +217,181 @@ function NpmIcon({ size }: { size?: number }) {
   )
 }
 
+// ── API Layer ─────────────────────────────────────────────────────────────────
+
+/** tRPC — Simple Icons path, brand color #398CCB */
+function TrpcIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="tRPC">
+      <path
+        fill="#398CCB"
+        d="M0 13.136V10.86h2.787V0h2.276v10.848h2.787v2.288H0zm9.367 0V0h2.276v4.52h4.075V0h2.276v13.136H15.72V6.82h-4.075v6.316H9.367zm11.357 0V0H24v2.288h-1V10.8H24v2.288l-3.276.048z"
+      />
+    </I>
+  )
+}
+
+/**
+ * oRPC — custom icon (no Simple Icons entry).
+ * A circle ring representing the "O" in oRPC with three connection nodes
+ * symbolising type-safe RPC calls. Brand-adjacent orange #F97316.
+ */
+function OrpcIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="oRPC">
+      <circle cx="12" cy="12" r="8.75" stroke="#F97316" strokeWidth="1.5" />
+      <circle cx="12" cy="7"  r="1.75" fill="#F97316" />
+      <circle cx="7"  cy="15" r="1.75" fill="#F97316" />
+      <circle cx="17" cy="15" r="1.75" fill="#F97316" />
+      <path
+        d="M12 8.75 7.8 13.5M12 8.75l4.2 4.75"
+        stroke="#F97316"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      />
+    </I>
+  )
+}
+
+// ── Database ──────────────────────────────────────────────────────────────────
+
+/** PostgreSQL — simplified database cylinder, PostgreSQL blue */
+function PostgreSQLIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="PostgreSQL">
+      <ellipse cx="12" cy="6" rx="8" ry="3" fill="#4a8fbf" />
+      <path fill="#336791" d="M4 6v12c0 1.657 3.582 3 8 3s8-1.343 8-3V6c0 1.657-3.582 3-8 3S4 7.657 4 6z" />
+      <ellipse cx="12" cy="6" rx="8" ry="3" fill="#4a8fbf" />
+    </I>
+  )
+}
+
+/** MongoDB — leaf silhouette, brand green #47A248 */
+function MongoDBIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="MongoDB">
+      <path fill="#47A248" d="M12 2C10.5 6.5 7 9.5 7 14a5 5 0 0010 0c0-4.5-3.5-7.5-5-12z" />
+      <rect x="11.25" y="16" width="1.5" height="6" rx="0.75" fill="#47A248" opacity="0.6" />
+    </I>
+  )
+}
+
+/** MySQL — stacked arcs, MySQL blue #4479A1 */
+function MySQLIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="MySQL">
+      <ellipse cx="12" cy="5.5" rx="8" ry="2.5" fill="#4479A1" />
+      <path fill="#4479A1" d="M4 5.5v4c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-4c0 1.38-3.582 2.5-8 2.5S4 6.88 4 5.5z" />
+      <path fill="#4479A1" d="M4 11v4c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-4c0 1.38-3.582 2.5-8 2.5S4 12.38 4 11z" />
+      <path fill="#3a6a91" d="M4 17v1.5C4 19.88 7.582 21 12 21s8-1.12 8-2.5V17c0 1.38-3.582 2.5-8 2.5S4 18.38 4 17z" />
+    </I>
+  )
+}
+
+/** SQLite — compact dark-blue cylinder */
+function SQLiteIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="SQLite">
+      <ellipse cx="12" cy="5" rx="7" ry="2.5" fill="#0078a0" />
+      <path fill="#003B57" d="M5 5v14c0 1.38 3.134 2.5 7 2.5S19 20.38 19 19V5c0 1.38-3.134 2.5-7 2.5S5 6.38 5 5z" />
+      <path stroke="rgba(255,255,255,0.18)" strokeWidth="1" fill="none" d="M5 10c0 1.38 3.134 2.5 7 2.5S19 11.38 19 10" />
+      <path stroke="rgba(255,255,255,0.18)" strokeWidth="1" fill="none" d="M5 15c0 1.38 3.134 2.5 7 2.5S19 16.38 19 15" />
+    </I>
+  )
+}
+
+// ── ORM ───────────────────────────────────────────────────────────────────────
+
+/** Drizzle ORM — two horizontal bars, lime brand color #C5F74F */
+function DrizzleIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="Drizzle ORM">
+      <rect x="2" y="7.5" width="20" height="3.5" rx="1.75" fill="#C5F74F" />
+      <rect x="2" y="13" width="13" height="3.5" rx="1.75" fill="#C5F74F" opacity="0.65" />
+    </I>
+  )
+}
+
+/** Prisma — prism / triangle silhouette, white on dark */
+function PrismaIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="Prisma">
+      <path fill="white" opacity="0.9" d="M4.5 20.5L12 3l7.5 17.5-7.5-4-7.5 4z" />
+      <path fill="#1a202c" d="M12 7l5 11.5-5-2.7V7z" />
+    </I>
+  )
+}
+
+/** Mongoose — warm red M shape */
+function MongooseIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="Mongoose">
+      <path fill="#880000" d="M3 19V9l4.5 6.5L12 5l4.5 10.5L21 9v10H3z" />
+    </I>
+  )
+}
+
+// ── DB Providers ──────────────────────────────────────────────────────────────
+
+/** Supabase — lightning bolt, brand green #3ECF8E */
+function SupabaseIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="Supabase">
+      <path fill="#3ECF8E" d="M13.2 2.6c-.4-.8-1.5-.8-1.8 0L4.6 16.5c-.3.7.2 1.5 1 1.5h6.4V22l7.4-10.1c.5-.7 0-1.7-.9-1.7h-5.9L13.2 2.6z" />
+    </I>
+  )
+}
+
+/** Neon — hex-node branching, cyan brand #00E5BF */
+function NeonIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="Neon">
+      <path stroke="#00E5BF" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" fill="none"
+        d="M12 3v5M8.5 6.5l3.5 1.5 3.5-1.5M6 12l6 3 6-3M6 12v5l6 3 6-3v-5" />
+    </I>
+  )
+}
+
+/** PlanetScale — orbit ring + planet dot, purple #8B5CF6 */
+function PlanetScaleIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="PlanetScale">
+      <circle cx="12" cy="12" r="3.5" fill="#8B5CF6" />
+      <ellipse cx="12" cy="12" rx="9.5" ry="4" stroke="#8B5CF6" strokeWidth="1.5" fill="none"
+        transform="rotate(-35 12 12)" />
+      <ellipse cx="12" cy="12" rx="9.5" ry="4" stroke="#8B5CF6" strokeWidth="1.5" fill="none"
+        transform="rotate(35 12 12)" opacity="0.4" />
+    </I>
+  )
+}
+
+// ── Addons ────────────────────────────────────────────────────────────────────
+
+/** PWA — browser frame with download arrow, accent cyan #00DDD4 */
+function PWAIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="PWA">
+      <rect x="2" y="4" width="20" height="16" rx="2" stroke="#00DDD4" strokeWidth="1.5" fill="none" />
+      <path stroke="#00DDD4" strokeWidth="1.5" fill="none" d="M2 8h20" />
+      <path stroke="#00DDD4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" fill="none"
+        d="M12 11v6M9 14.5l3 3 3-3" />
+    </I>
+  )
+}
+
+// ── Skill ─────────────────────────────────────────────────────────────────────
+
+function SkillIcon({ size }: { size?: number }) {
+  return (
+    <I size={size} title="Skill">
+      {/* graduation cap */}
+      <path d="M12 3L2 8l10 5 10-5-10-5z" stroke="rgba(0,221,212,0.70)" strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+      <path d="M6 10.5V16c0 1.657 2.686 3 6 3s6-1.343 6-3v-5.5" stroke="rgba(0,221,212,0.70)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <path d="M20 8v5" stroke="rgba(0,221,212,0.50)" strokeWidth="1.5" strokeLinecap="round" />
+    </I>
+  )
+}
+
 // ── None / generic ────────────────────────────────────────────────────────────
 
 function NoneIcon({ size }: { size?: number }) {
@@ -231,17 +406,43 @@ function NoneIcon({ size }: { size?: number }) {
 // ── Registry ──────────────────────────────────────────────────────────────────
 
 const ICON_MAP: Record<string, (props: { size?: number }) => ReactNode> = {
+  // Frontend
   nextjs:        NextjsIcon,
+  // Backend
   convex:        ConvexIcon,
   hono:          HonoIcon,
+  // API Layer
+  trpc:          TrpcIcon,
+  orpc:          OrpcIcon,
+  // Database
+  postgresql:    PostgreSQLIcon,
+  mongodb:       MongoDBIcon,
+  mysql:         MySQLIcon,
+  sqlite:        SQLiteIcon,
+  // ORM
+  drizzle:       DrizzleIcon,
+  prisma:        PrismaIcon,
+  mongoose:      MongooseIcon,
+  // DB Providers
+  supabase:      SupabaseIcon,
+  neon:          NeonIcon,
+  planetscale:   PlanetScaleIcon,
+  // Auth
   clerk:         ClerkIcon,
   workos:        WorkOSIcon,
   "better-auth": BetterAuthIcon,
+  // UI
   tailwind:      TailwindIcon,
   shadcn:        ShadcnIcon,
+  // Email
   resend:        ResendIcon,
+  // Addons
+  pwa:           PWAIcon,
+  skill:         SkillIcon,
+  // Package managers
   pnpm:          PnpmIcon,
   npm:           NpmIcon,
+  // Fallback
   none:          NoneIcon,
 }
 

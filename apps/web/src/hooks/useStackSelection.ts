@@ -3,25 +3,34 @@
 import { parseAsString, useQueryStates } from "nuqs"
 
 export const defaultSelections = {
-  name: "my-app",
-  fe: "nextjs",
-  be: "convex",
-  db: "convex",
-  auth: "clerk",
-  ui: "none",
-  email: "resend",
-  pm: "pnpm",
+  name:        "my-app",
+  fe:          "nextjs",
+  be:          "convex",
+  api_layer:   "none",
+  db:          "convex",
+  orm:         "none",
+  db_provider: "none",
+  auth:        "clerk",
+  ui:          "none",
+  email:       "resend",
+  /** Comma-separated addon + skill IDs, e.g. "pwa,skill-careerops" */
+  addons:      "none",
+  pm:          "pnpm",
 }
 
 export function useStackSelection() {
   return useQueryStates({
-    name: parseAsString.withDefault(defaultSelections.name),
-    fe: parseAsString.withDefault(defaultSelections.fe),
-    be: parseAsString.withDefault(defaultSelections.be),
-    db: parseAsString.withDefault(defaultSelections.db),
-    auth: parseAsString.withDefault(defaultSelections.auth),
-    ui: parseAsString.withDefault(defaultSelections.ui),
-    email: parseAsString.withDefault(defaultSelections.email),
-    pm: parseAsString.withDefault(defaultSelections.pm),
+    name:        parseAsString.withDefault(defaultSelections.name),
+    fe:          parseAsString.withDefault(defaultSelections.fe),
+    be:          parseAsString.withDefault(defaultSelections.be),
+    api_layer:   parseAsString.withDefault(defaultSelections.api_layer),
+    db:          parseAsString.withDefault(defaultSelections.db),
+    orm:         parseAsString.withDefault(defaultSelections.orm),
+    db_provider: parseAsString.withDefault(defaultSelections.db_provider),
+    auth:        parseAsString.withDefault(defaultSelections.auth),
+    ui:          parseAsString.withDefault(defaultSelections.ui),
+    email:       parseAsString.withDefault(defaultSelections.email),
+    addons:      parseAsString.withDefault(defaultSelections.addons),
+    pm:          parseAsString.withDefault(defaultSelections.pm),
   })
 }
