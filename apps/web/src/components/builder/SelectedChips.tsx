@@ -5,23 +5,39 @@ import { STACKS } from "@/lib/stacks"
 
 type SelectedChipsProps = {
   selections: Record<string, string>
-  onRemove: (categoryId: string) => void
+  onRemove: (categoryId: string, optionId?: string) => void
 }
 
 export function SelectedChips({ selections, onRemove }: SelectedChipsProps) {
-  const chips = Object.entries(selections)
-    .filter(([catId, optId]) => {
-      if (catId === "name") return false
-      if (optId === "none") return false
-      return true
-    })
-    .map(([catId, optId]) => {
-      const category = STACKS.find((c) => c.id === catId)
-      const option = category?.options.find((o) => o.id === optId)
-      if (!option) return null
-      return { catId, label: option.label }
-    })
-    .filter(Boolean) as { catId: string; label: string }[]
+  const chips: { key: string; label: string; onRemove: () => void }[] = []
+
+  for (const category of STACKS) {
+    const value = selections[category.id] ?? ""
+
+    if (category.multi) {
+      // Multi-select: expand comma-separated values into individual chips
+      const selected = value.split(",").filter((v) => v && v !== "none")
+      for (const optId of selected) {
+        const option = category.options.find((o) => o.id === optId)
+        if (!option) continue
+        chips.push({
+          key: `${category.id}:${optId}`,
+          label: option.label,
+          onRemove: () => onRemove(category.id, optId),
+        })
+      }
+    } else {
+      // Single-select
+      if (!value || value === "none") continue
+      const option = category.options.find((o) => o.id === value)
+      if (!option) continue
+      chips.push({
+        key: category.id,
+        label: option.label,
+        onRemove: () => onRemove(category.id),
+      })
+    }
+  }
 
   if (chips.length === 0) {
     return <p className="text-xs text-white/20">No selections yet</p>
@@ -29,12 +45,8 @@ export function SelectedChips({ selections, onRemove }: SelectedChipsProps) {
 
   return (
     <div className="flex flex-wrap gap-1.5">
-      {chips.map(({ catId, label }) => (
-        <Chip
-          key={catId}
-          label={label}
-          onRemove={() => onRemove(catId)}
-        />
+      {chips.map(({ key, label, onRemove: remove }) => (
+        <Chip key={key} label={label} onRemove={remove} />
       ))}
     </div>
   )

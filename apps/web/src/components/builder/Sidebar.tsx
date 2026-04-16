@@ -28,12 +28,19 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
   function handleReset() { onChange({ ...defaultSelections }) }
 
   function handleRandomize() {
-    const pick = (id: string) => {
+    const pick = (id: string, multi?: boolean) => {
       const cat = STACKS.find((c) => c.id === id)
       if (!cat) return "none"
+      if (multi) {
+        // Pick 0–2 random options for multi-select categories
+        const shuffled = [...cat.options].sort(() => Math.random() - 0.5)
+        const count = Math.floor(Math.random() * 3)
+        const picked = shuffled.slice(0, count).map((o) => o.id)
+        return picked.length > 0 ? picked.join(",") : "none"
+      }
       return cat.options[Math.floor(Math.random() * cat.options.length)]?.id ?? "none"
     }
-    const updates = Object.fromEntries(STACKS.map((cat) => [cat.id, pick(cat.id)]))
+    const updates = Object.fromEntries(STACKS.map((cat) => [cat.id, pick(cat.id, cat.multi)]))
     onChange(updates as Partial<Selections>)
   }
 
@@ -50,13 +57,32 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
       })
   }
 
-  const totalPicks = Object.entries(selections).filter(([k, v]) => k !== "name" && v !== "none").length
+  function handleRemoveChip(categoryId: string, optionId?: string) {
+    const cat = STACKS.find((c) => c.id === categoryId)
+    if (cat?.multi && optionId) {
+      // Remove one option from the comma-separated list
+      const current = (selections[categoryId as keyof Selections] ?? "")
+        .split(",")
+        .filter((v) => v && v !== "none" && v !== optionId)
+      onChange({ [categoryId]: current.length > 0 ? current.join(",") : "none" } as Partial<Selections>)
+    } else {
+      onChange({ [categoryId]: "none" } as Partial<Selections>)
+    }
+  }
+
+  const totalPicks = STACKS.reduce((sum, cat) => {
+    const val = selections[cat.id as keyof Selections] ?? ""
+    if (cat.multi) {
+      return sum + val.split(",").filter((v) => v && v !== "none").length
+    }
+    return sum + (val && val !== "none" ? 1 : 0)
+  }, 0)
 
   return (
     <aside className="flex h-full flex-col gap-4 overflow-y-auto p-4">
       <div>
         <Label>Project Name</Label>
-        <Input value={selections.name} onChange={(e) => onChange({ name: e.target.value })} placeholder="my-app" spellCheck={false} />
+        <Input value={selections.name} onChange={(e) => onChange({ name: e.target.value.replace(/\s/g, "-") })} placeholder="my-app" spellCheck={false} />
       </div>
 
       <Divider />
@@ -70,7 +96,10 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
 
       <div>
         <Label>Selected Stack <span className="text-white/15">({totalPicks})</span></Label>
-        <SelectedChips selections={selections} onRemove={(id) => onChange({ [id]: "none" } as Partial<Selections>)} />
+        <SelectedChips
+          selections={selections as Record<string, string>}
+          onRemove={handleRemoveChip}
+        />
       </div>
 
       <div className="mt-auto flex flex-col gap-2 pt-2">

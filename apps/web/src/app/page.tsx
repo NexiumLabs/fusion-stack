@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import Link from "next/link"
 import { ArrowRight, Terminal, Layers, Zap } from "lucide-react"
 import { STACKS } from "@/lib/stacks"
@@ -201,7 +202,7 @@ function FeatureCard({
   description,
 }: {
   number: string
-  icon: React.ReactNode
+  icon: ReactNode
   title: string
   description: string
 }) {
