@@ -1,0 +1,4 @@
+{
+  "name": "be-vite",
+  "description": "Hono API mounted as Vite middleware — single port, no concurrently"
+}

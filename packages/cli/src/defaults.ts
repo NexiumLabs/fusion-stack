@@ -14,4 +14,5 @@ export const DEFAULT_SELECTIONS: Selections = {
   skills: [],
   pm: "pnpm",
   apiLayer: "none",
+  srcDir: true,
 }

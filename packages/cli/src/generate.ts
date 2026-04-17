@@ -23,12 +23,32 @@ const TEXT_EXTENSIONS = new Set([
 
 function resolveSlices(s: Selections): string[] {
   const slices: string[] = ["base"]
-  if (s.fe === "nextjs") slices.push("fe-nextjs")
-  if (s.be === "convex") slices.push("be-convex")
-  if (s.be === "hono")   slices.push("be-hono")
-  if (s.be === "nextjs") slices.push("be-nextjs")
-  if (s.apiLayer === "trpc") slices.push("api-trpc")
-  if (s.apiLayer === "orpc") slices.push("api-orpc")
+
+  // Frontend
+  if (s.fe === "nextjs")         slices.push("fe-nextjs")
+  if (s.fe === "tanstack-start") slices.push("fe-tanstack-start")
+  if (s.fe === "vite-react")     slices.push("fe-vite-react")
+
+  // Backend
+  if (s.be === "convex")          slices.push("be-convex")
+  if (s.be === "hono")            slices.push("be-hono")
+  if (s.be === "nextjs")          slices.push("be-nextjs")
+  if (s.be === "tanstack-start")  slices.push("be-tanstack-start")
+  if (s.be === "vite")            slices.push("be-vite")
+
+  // API layer — FE-aware slice selection
+  if (s.apiLayer === "trpc") {
+    if (s.fe === "tanstack-start") slices.push("api-trpc-tanstack-start")
+    else if (s.fe === "vite-react") slices.push("api-trpc-vite")
+    else                            slices.push("api-trpc")
+  }
+  if (s.apiLayer === "orpc") {
+    if (s.fe === "tanstack-start") slices.push("api-orpc-tanstack-start")
+    else if (s.fe === "vite-react") slices.push("api-orpc-vite")
+    else                            slices.push("api-orpc")
+  }
+
+  // Database
   if (s.db === "convex") slices.push("db-convex")
 
   // ORM slices (Drizzle is dialect-specific, Prisma/Mongoose are universal)
@@ -43,14 +63,38 @@ function resolveSlices(s: Selections): string[] {
   if (s.dbProvider === "neon")        slices.push("provider-neon")
   if (s.dbProvider === "planetscale") slices.push("provider-planetscale")
 
-  if (s.auth === "clerk")        slices.push("auth-clerk")
-  if (s.auth === "better-auth")  slices.push("auth-better-auth")
-  if (s.auth === "workos")       slices.push("auth-workos")
-  if (s.ui === "shadcn")         slices.push("ui-shadcn")
-  if (s.email === "resend")      slices.push("email-resend")
+  // Auth — FE-aware slice selection
+  if (s.auth === "clerk") {
+    if (s.fe === "tanstack-start")      slices.push("auth-clerk-tanstack-start")
+    else if (s.fe === "vite-react")     slices.push("auth-clerk-vite")
+    else                                slices.push("auth-clerk")
+  }
+  if (s.auth === "better-auth") {
+    if (s.fe === "tanstack-start")      slices.push("auth-better-auth-tanstack-start")
+    else if (s.fe === "vite-react")     slices.push("auth-better-auth-vite")
+    else                                slices.push("auth-better-auth")
+  }
+  if (s.auth === "workos") {
+    if (s.fe === "tanstack-start")      slices.push("auth-workos-tanstack-start")
+    else if (s.fe === "vite-react")     slices.push("auth-workos-vite")
+    else                                slices.push("auth-workos")
+  }
 
-  // Addons (last — can override next.config.ts etc.)
-  if (s.addons.includes("pwa")) slices.push("addon-pwa")
+  // UI — FE-aware shadcn variant
+  if (s.ui === "shadcn") {
+    if (s.fe === "tanstack-start")      slices.push("ui-shadcn-tanstack-start")
+    else if (s.fe === "vite-react")     slices.push("ui-shadcn-vite")
+    else                                slices.push("ui-shadcn")
+  }
+
+  if (s.email === "resend") slices.push("email-resend")
+
+  // Addons (last — can override config files)
+  if (s.addons.includes("pwa")) {
+    if (s.fe === "tanstack-start")      slices.push("addon-pwa-tanstack-start")
+    else if (s.fe === "vite-react")     slices.push("addon-pwa-vite")
+    else                                slices.push("addon-pwa")
+  }
 
   return slices
 }
@@ -101,6 +145,31 @@ async function collectEnvExamples(sliceDirs: string[]): Promise<string> {
   return parts.join("\n\n")
 }
 
+/**
+ * For Next.js root layout: move every file/dir from {targetDir}/src/ to {targetDir}/
+ * and patch the tsconfig.json @/* path alias from ./src/* to ./*.
+ */
+async function flattenSrcDir(targetDir: string): Promise<void> {
+  const srcDir = path.join(targetDir, "src")
+  if (!(await fse.pathExists(srcDir))) return
+
+  const entries = await fse.readdir(srcDir, { withFileTypes: true })
+  for (const entry of entries) {
+    const from = path.join(srcDir, entry.name)
+    const to = path.join(targetDir, entry.name)
+    await fse.move(from, to, { overwrite: true })
+  }
+  await fse.remove(srcDir)
+
+  // Patch tsconfig.json: "@/*": ["./src/*"] → "@/*": ["./*"]
+  const tsconfigPath = path.join(targetDir, "tsconfig.json")
+  if (await fse.pathExists(tsconfigPath)) {
+    const content = await fse.readFile(tsconfigPath, "utf-8")
+    const patched = content.replace(/"\.\/src\/\*"/g, '"./*"')
+    if (patched !== content) await fse.writeFile(tsconfigPath, patched, "utf-8")
+  }
+}
+
 function prismaProvider(db: Selections["db"]): string {
   const map: Partial<Record<Selections["db"], string>> = {
     postgresql: "postgresql",
@@ -140,6 +209,17 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
   mergedPkg["version"] = "0.1.0"
   mergedPkg["private"] = true
 
+  // be:vite runs inside the Vite process — no combined dev script needed.
+  // When standalone Hono is paired with Vite-based frontends, run both with concurrently.
+  if (s.be === "hono" && (s.fe === "vite-react" || s.fe === "tanstack-start")) {
+    const feCmd = s.fe === "tanstack-start" ? "vinxi dev" : "vite"
+    const scripts = (mergedPkg["scripts"] ?? {}) as Record<string, string>
+    scripts["dev"] = `concurrently "${feCmd}" "tsx watch src/server/index.ts"`
+    scripts["dev:client"] = feCmd
+    scripts["dev:server"] = "tsx watch src/server/index.ts"
+    mergedPkg["scripts"] = scripts
+  }
+
   // 5. Create target directory
   await fse.mkdirp(targetDir)
 
@@ -171,12 +251,18 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
 
   // 9. Apply token substitution across all text files
   const tokens: Record<string, string> = {
-    PROJECT_NAME:    s.projectName,
-    PM:              s.pm,
-    PM_RUN:          s.pm === "pnpm" ? "pnpm" : "npm run",
-    PRISMA_PROVIDER: prismaProvider(s.db),
+    PROJECT_NAME:      s.projectName,
+    PM:                s.pm,
+    PM_RUN:            s.pm === "pnpm" ? "pnpm" : "npm run",
+    PRISMA_PROVIDER:   prismaProvider(s.db),
+    PUBLIC_VAR_PREFIX: s.fe === "nextjs" ? "NEXT_PUBLIC" : "VITE",
   }
   await walkAndApplyTokens(targetDir, tokens)
+
+  // 9a. Root layout — move src/* to project root and patch tsconfig paths
+  if (s.fe === "nextjs" && !s.srcDir) {
+    await flattenSrcDir(targetDir)
+  }
 
   clack.log.step("Project files written.")
 

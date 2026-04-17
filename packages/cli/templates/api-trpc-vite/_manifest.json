@@ -1,0 +1,4 @@
+{
+  "name": "api-trpc-vite",
+  "description": "tRPC for Vite React — works with be:hono (separate server on :3001) or be:vite (inside Vite dev server)"
+}

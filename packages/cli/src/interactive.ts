@@ -46,23 +46,62 @@ export async function runInteractive(): Promise<void> {
   const feRaw = await clack.select({
     message: "Frontend",
     options: [
-      { value: "nextjs", label: "Next.js", hint: "React framework with hybrid rendering" },
-      { value: "none",   label: "No Frontend", hint: "API or backend-only project" },
+      { value: "nextjs",         label: "Next.js",        hint: "React framework with hybrid rendering" },
+      { value: "tanstack-start", label: "TanStack Start", hint: "Full-stack React with Vite and file-based routing" },
+      { value: "vite-react",     label: "Vite + React",   hint: "Fast SPA — pair with any backend or use standalone" },
+      { value: "none",           label: "No Frontend",    hint: "API or backend-only project" },
     ],
     initialValue: "nextjs",
   })
   if (isCancel(feRaw)) abort()
   const fe = feRaw as Selections["fe"]
 
-  // Backend
+  // src/ layout — Next.js only
+  let srcDir = true
+  if (fe === "nextjs") {
+    const srcDirRaw = await clack.select({
+      message: "Project layout",
+      options: [
+        { value: true,  label: "src/ layout",  hint: "app/ and lib/ live inside src/ (recommended)" },
+        { value: false, label: "Root layout",  hint: "app/ and lib/ at project root" },
+      ],
+      initialValue: true,
+    })
+    if (isCancel(srcDirRaw)) abort()
+    srcDir = srcDirRaw as boolean
+  }
+
+  // Backend — options vary by frontend
+  const beOptions = fe === "nextjs"
+    ? [
+        { value: "convex", label: "Convex",            hint: "Reactive backend-as-a-service" },
+        { value: "hono",   label: "Hono",              hint: "Ultrafast web framework for Node.js" },
+        { value: "nextjs", label: "Next.js API Routes", hint: "Built-in App Router route handlers" },
+        { value: "none",   label: "No Backend",        hint: "Frontend-only or external API" },
+      ]
+    : fe === "tanstack-start"
+    ? [
+        { value: "convex",          label: "Convex",                    hint: "Reactive backend-as-a-service" },
+        { value: "hono",            label: "Hono",                      hint: "Ultrafast web framework for Node.js" },
+        { value: "tanstack-start",  label: "TanStack Start (built-in)", hint: "Native API routes via createAPIFileRoute" },
+        { value: "none",            label: "No Backend",                hint: "Frontend-only or external API" },
+      ]
+    : fe === "vite-react"
+    ? [
+        { value: "convex", label: "Convex",              hint: "Reactive backend-as-a-service" },
+        { value: "hono",   label: "Hono",                hint: "Separate API server on :3001 via concurrently" },
+        { value: "vite",   label: "Vite (built-in API)", hint: "Hono mounted inside the Vite dev server — single port, no concurrently" },
+        { value: "none",   label: "No Backend",          hint: "Frontend-only or external API" },
+      ]
+    : /* fe === "none" */ [
+        { value: "convex", label: "Convex",              hint: "Reactive backend-as-a-service" },
+        { value: "hono",   label: "Hono",                hint: "Ultrafast web framework for Node.js" },
+        { value: "none",   label: "No Backend",          hint: "No backend framework" },
+      ]
+
   const beRaw = await clack.select({
     message: "Backend",
-    options: [
-      { value: "convex", label: "Convex",            hint: "Reactive backend-as-a-service" },
-      { value: "hono",   label: "Hono",               hint: "Ultrafast web framework for Node.js" },
-      { value: "nextjs", label: "Next.js API Routes", hint: "Built-in App Router route handlers" },
-      { value: "none",   label: "No Backend",         hint: "Frontend-only or external API" },
-    ],
+    options: beOptions,
     initialValue: "convex",
   })
   if (isCancel(beRaw)) abort()
@@ -118,12 +157,14 @@ export async function runInteractive(): Promise<void> {
   if (db !== "convex" && db !== "none") {
     const ormOptions = db === "mongodb"
       ? [
-          { value: "mongoose", label: "Mongoose", hint: "Elegant MongoDB object modeling" },
-          { value: "prisma",   label: "Prisma",   hint: "Type-safe ORM with MongoDB support" },
+          { value: "mongoose", label: "Mongoose",  hint: "Elegant MongoDB object modeling" },
+          { value: "prisma",   label: "Prisma",    hint: "Type-safe ORM with MongoDB support" },
+          { value: "none",     label: "None",      hint: "Use the MongoDB driver directly" },
         ]
       : [
-          { value: "drizzle", label: "Drizzle", hint: "Lightweight TypeScript ORM" },
-          { value: "prisma",  label: "Prisma",  hint: "Type-safe ORM with migrations" },
+          { value: "drizzle",  label: "Drizzle",   hint: "Lightweight TypeScript ORM" },
+          { value: "prisma",   label: "Prisma",    hint: "Type-safe ORM with migrations" },
+          { value: "none",     label: "None",      hint: "Use a query builder or raw SQL" },
         ]
 
     const ormRaw = await clack.select({
@@ -204,13 +245,16 @@ export async function runInteractive(): Promise<void> {
   if (isCancel(emailRaw)) abort()
   const email = emailRaw as Selections["email"]
 
-  // Addons — multi-select (only show if options are available)
+  // Addons — multi-select (available for all web frontends)
   let addons: Selections["addons"] = []
-  if (fe === "nextjs") {
+  if (fe !== "none") {
+    const pwaHint = fe === "nextjs"
+      ? "Service worker, web manifest, push notifications"
+      : "Service worker, web manifest — via vite-plugin-pwa"
     const addonsRaw = await clack.multiselect({
       message: "Addons",
       options: [
-        { value: "pwa", label: "PWA", hint: "Service worker, web manifest, push notifications" },
+        { value: "pwa", label: "PWA", hint: pwaHint },
       ],
       required: false,
     })
@@ -239,7 +283,7 @@ export async function runInteractive(): Promise<void> {
   if (isCancel(pmRaw)) abort()
   const pm = pmRaw as Selections["pm"]
 
-  const raw: Selections = { projectName, fe, be, db, orm, dbProvider, auth, ui, email, addons, skills, pm, apiLayer }
+  const raw: Selections = { projectName, fe, be, db, orm, dbProvider, auth, ui, email, addons, skills, pm, apiLayer, srcDir }
   const selections = autoResolve(raw)
 
   const targetDir = path.resolve(process.cwd(), selections.projectName)

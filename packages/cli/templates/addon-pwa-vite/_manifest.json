@@ -1,0 +1,4 @@
+{
+  "name": "addon-pwa-vite",
+  "description": "PWA support for Vite-based frontends via vite-plugin-pwa"
+}

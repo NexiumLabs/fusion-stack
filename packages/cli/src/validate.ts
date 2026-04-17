@@ -38,6 +38,20 @@ const RULES: Rule[] = [
   { when: "db:mysql",      clear: "orm:mongoose" },
   { when: "db:sqlite",     clear: "orm:mongoose" },
 
+  // New frontends: block framework-specific backends on the wrong FE
+  { when: "fe:tanstack-start",  clear: "be:nextjs" },
+  { when: "fe:tanstack-start",  clear: "be:vite" },
+  { when: "fe:vite-react",      clear: "be:nextjs" },
+  { when: "fe:vite-react",      clear: "be:tanstack-start" },
+  { when: "fe:nextjs",          clear: "be:tanstack-start" },
+  { when: "fe:nextjs",          clear: "be:vite" },
+  { when: "fe:none",            clear: "be:tanstack-start" },
+  { when: "fe:none",            clear: "be:vite" },
+  // be:tanstack-start cannot use Convex DB (no Convex backend)
+  { when: "be:tanstack-start",  clear: "db:convex" },
+  // be:vite cannot use Convex DB (Convex requires its own backend)
+  { when: "be:vite",            clear: "db:convex" },
+
   // Provider incompatibilities
   { when: "db:none",       clear: "dbProvider:supabase" },
   { when: "db:none",       clear: "dbProvider:neon" },
@@ -73,13 +87,6 @@ export function validateSelections(s: Selections): string[] {
     }
   }
 
-  // A real database without an ORM produces no connection code — always require one
-  const requiresOrm = ["postgresql", "mysql", "mongodb", "sqlite"] as const
-  if ((requiresOrm as readonly string[]).includes(s.db) && s.orm === "none") {
-    const ormHint = s.db === "mongodb" ? "mongoose | prisma" : "drizzle | prisma"
-    errors.push(`--database ${s.db} requires --orm (${ormHint})`)
-  }
-
   return errors
 }
 
@@ -106,8 +113,8 @@ export function autoResolve(s: Selections): Selections {
     }
   }
 
-  // Addon validation — PWA requires Next.js frontend
-  if (result.fe !== "nextjs") {
+  // Addon validation — PWA requires a web frontend
+  if (result.fe === "none") {
     result.addons = result.addons.filter((a) => a !== "pwa")
   }
 

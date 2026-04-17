@@ -9,6 +9,34 @@ export function printNextSteps(s: Selections): void {
   steps.push(`${pc.cyan("cd")} ${s.projectName}`)
   steps.push(`${pc.cyan(run)} dev`)
 
+  if (s.fe === "tanstack-start") {
+    steps.push("")
+    steps.push(pc.yellow("! TanStack Start:"))
+    steps.push(`  Routes live in ${pc.cyan("app/routes/")} — file-based routing`)
+    steps.push(`  Add a route: ${pc.cyan("app/routes/about.tsx")}`)
+    steps.push(`  ${pc.dim("→ tanstack.com/router/latest/docs/framework/react/start/overview")}`)
+    if (s.be === "hono") {
+      steps.push("")
+      steps.push(pc.yellow("! TanStack Start + Hono:"))
+      steps.push(`  TanStack Start on ${pc.cyan(":3000")}  ·  Hono on ${pc.cyan(":3001")}`)
+      steps.push(`  ${pc.dim("→ pnpm dev starts both via concurrently")}`)
+    }
+  }
+
+  if (s.fe === "vite-react") {
+    steps.push("")
+    steps.push(pc.yellow("! Vite React:"))
+    steps.push(`  Entry: ${pc.cyan("src/main.tsx")}  ·  ${pc.cyan("@")} alias maps to ${pc.cyan("src/")}`)
+    if (s.be === "hono") {
+      steps.push(`  Vite on ${pc.cyan(":5173")}  ·  Hono on ${pc.cyan(":3001")}`)
+      steps.push(`  ${pc.dim("→ pnpm dev starts both via concurrently")}`)
+    } else if (s.be === "vite") {
+      steps.push(`  API runs inside the Vite dev server — single port ${pc.cyan(":5173")}`)
+      steps.push(`  API routes defined in ${pc.cyan("src/server/api.ts")} via Hono`)
+      steps.push(`  ${pc.dim("→ For production: pnpm build && pnpm serve")}`)
+    }
+  }
+
   if (s.ui === "shadcn") {
     steps.push("")
     steps.push(pc.yellow("! shadcn/ui setup (run once):"))
@@ -30,26 +58,64 @@ export function printNextSteps(s: Selections): void {
     steps.push(`  ${pc.dim("→ nextjs.org/docs/app/building-your-application/routing/route-handlers")}`)
   }
 
+  if (s.be === "tanstack-start") {
+    steps.push("")
+    steps.push(pc.yellow("! TanStack Start API routes:"))
+    steps.push(`  API handlers live in ${pc.cyan("app/routes/api/")} via ${pc.cyan("createAPIFileRoute")}`)
+    steps.push(`  Server functions live in ${pc.cyan("app/server/functions.ts")} via ${pc.cyan("createServerFn")}`)
+    steps.push(`  ${pc.dim("→ tanstack.com/router/latest/docs/framework/react/start/server-functions")}`)
+  }
+
   if (s.apiLayer === "trpc") {
     steps.push("")
     steps.push(pc.yellow("! tRPC setup:"))
-    steps.push(`  Wrap your root layout with ${pc.cyan("TRPCProvider")} from ${pc.cyan("@/lib/trpc/provider")}`)
-    if (s.be === "hono") {
-      steps.push(`  ${pc.dim("→ For Hono: import trpcHonoHandler from '@/server/trpc-hono' and mount:")}`)
-      steps.push(`  ${pc.dim("    app.use('/trpc/*', trpcHonoHandler)")}`)
+    if (s.fe === "tanstack-start") {
+      steps.push(`  Wrap ${pc.cyan("app/routes/__root.tsx")} with ${pc.cyan("TRPCProvider")} from ${pc.cyan("@/lib/trpc/provider")}`)
+      steps.push(`  Routers live in ${pc.cyan("app/server/routers/")} — API route at ${pc.cyan("app/routes/api/trpc.ts")}`)
+    } else if (s.fe === "vite-react") {
+      steps.push(`  Wrap ${pc.cyan("src/main.tsx")} with ${pc.cyan("TRPCProvider")} from ${pc.cyan("@/lib/trpc/provider")}`)
+      if (s.be === "hono") {
+        steps.push(`  ${pc.dim("→ For Hono: import trpcHonoHandler from '@/server/trpc-hono' and mount:")}`)
+        steps.push(`  ${pc.dim("    app.use('/trpc/*', trpcHonoHandler)")}`)
+      } else if (s.be === "vite") {
+        steps.push(`  ${pc.dim("→ tRPC handler is auto-mounted at /api/trpc via src/server/api.ts")}`)
+      }
+    } else {
+      steps.push(`  Wrap your root layout with ${pc.cyan("TRPCProvider")} from ${pc.cyan("@/lib/trpc/provider")}`)
+      if (s.be === "hono") {
+        steps.push(`  ${pc.dim("→ For Hono: import trpcHonoHandler from '@/server/trpc-hono' and mount:")}`)
+        steps.push(`  ${pc.dim("    app.use('/trpc/*', trpcHonoHandler)")}`)
+      }
     }
   }
 
   if (s.apiLayer === "orpc") {
     steps.push("")
     steps.push(pc.yellow("! oRPC setup:"))
-    steps.push(`  Wrap your root layout with ${pc.cyan("ORPCProvider")} from ${pc.cyan("@/lib/orpc/provider")}`)
+    if (s.fe === "tanstack-start") {
+      steps.push(`  Wrap ${pc.cyan("app/routes/__root.tsx")} with ${pc.cyan("ORPCProvider")} from ${pc.cyan("@/lib/orpc/provider")}`)
+      steps.push(`  Routers live in ${pc.cyan("app/server/routers/")} — API route at ${pc.cyan("app/routes/api/orpc.ts")}`)
+    } else if (s.fe === "vite-react") {
+      steps.push(`  Wrap ${pc.cyan("src/main.tsx")} with ${pc.cyan("ORPCProvider")} from ${pc.cyan("@/lib/orpc/provider")}`)
+      if (s.be === "hono") {
+        steps.push(`  ${pc.dim("→ import orpcHonoHandler from '@/server/orpc-hono' and mount:")}`)
+        steps.push(`  ${pc.dim("    app.use('/api/orpc/*', (c) => orpcHonoHandler(c))")}`)
+      } else if (s.be === "vite") {
+        steps.push(`  ${pc.dim("→ oRPC handler is auto-mounted at /api/orpc via src/server/api.ts")}`)
+      }
+    } else {
+      steps.push(`  Wrap your root layout with ${pc.cyan("ORPCProvider")} from ${pc.cyan("@/lib/orpc/provider")}`)
+    }
   }
 
   if (s.auth === "clerk") {
     steps.push("")
     steps.push(pc.yellow("! Clerk — add to .env.local:"))
-    steps.push(`  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...`)
+    if (s.fe === "nextjs") {
+      steps.push(`  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...`)
+    } else {
+      steps.push(`  VITE_CLERK_PUBLISHABLE_KEY=pk_...`)
+    }
     steps.push(`  CLERK_SECRET_KEY=sk_...`)
     steps.push(`  ${pc.dim("→ dashboard.clerk.com")}`)
   }
@@ -59,8 +125,23 @@ export function printNextSteps(s: Selections): void {
     steps.push(pc.yellow("! WorkOS AuthKit — add to .env.local:"))
     steps.push(`  WORKOS_API_KEY=sk_...`)
     steps.push(`  WORKOS_CLIENT_ID=client_...`)
-    steps.push(`  WORKOS_COOKIE_PASSWORD=$(openssl rand -base64 32)`)
-    steps.push(`  WORKOS_REDIRECT_URI=http://localhost:3000/callback`)
+    if (s.fe === "vite-react") {
+      steps.push(`  VITE_WORKOS_CLIENT_ID=client_...`)
+    }
+    if (s.fe === "nextjs") {
+      steps.push(`  WORKOS_COOKIE_PASSWORD=$(openssl rand -base64 32)`)
+      steps.push(`  WORKOS_REDIRECT_URI=http://localhost:3000/callback`)
+    } else if (s.fe === "tanstack-start") {
+      steps.push(`  WORKOS_REDIRECT_URI=http://localhost:3000/auth/callback`)
+    } else if (s.be === "hono" || s.be === "vite") {
+      // Separate backend process handles the OAuth callback
+      steps.push(`  WORKOS_SESSION_SECRET=$(openssl rand -base64 32)`)
+      steps.push(`  WORKOS_REDIRECT_URI=http://localhost:3001/api/auth/callback`)
+    } else {
+      // Convex or no backend — Vite itself serves the callback route
+      steps.push(`  WORKOS_SESSION_SECRET=$(openssl rand -base64 32)`)
+      steps.push(`  WORKOS_REDIRECT_URI=http://localhost:5173/auth/callback`)
+    }
     steps.push(`  ${pc.dim("→ dashboard.workos.com — set redirect URI under your app's configuration")}`)
   }
 
@@ -68,7 +149,8 @@ export function printNextSteps(s: Selections): void {
     steps.push("")
     steps.push(pc.yellow("! Better Auth — add to .env.local:"))
     steps.push(`  AUTH_SECRET=$(openssl rand -base64 32)`)
-    steps.push(`  ${pc.dim("→ Configure your DB adapter in src/lib/auth.ts")}`)
+    const authPath = s.fe === "tanstack-start" ? "app/lib/auth.ts" : "src/lib/auth.ts"
+    steps.push(`  ${pc.dim(`→ Configure your DB adapter in ${authPath}`)}`)
   }
 
   if (s.email === "resend") {
@@ -103,10 +185,11 @@ export function printNextSteps(s: Selections): void {
 
   // Provider steps
   if (s.dbProvider === "supabase") {
+    const pub = s.fe === "nextjs" ? "NEXT_PUBLIC" : "VITE"
     steps.push("")
     steps.push(pc.yellow("! Supabase — add to .env.local:"))
-    steps.push(`  NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co`)
-    steps.push(`  NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...`)
+    steps.push(`  ${pub}_SUPABASE_URL=https://<project>.supabase.co`)
+    steps.push(`  ${pub}_SUPABASE_ANON_KEY=eyJ...`)
     steps.push(`  DATABASE_URL=postgresql://postgres:<password>@<host>:5432/postgres`)
     steps.push(`  ${pc.dim("→ supabase.com/dashboard")}`)
   }
@@ -128,12 +211,18 @@ export function printNextSteps(s: Selections): void {
   // PWA steps
   if (s.addons.includes("pwa")) {
     steps.push("")
-    steps.push(pc.yellow("! PWA — generate VAPID keys:"))
-    steps.push(`  npx web-push generate-vapid-keys`)
-    steps.push(`  ${pc.dim("→ Copy output to .env.local:")}`)
-    steps.push(`  NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_public_key`)
-    steps.push(`  VAPID_PRIVATE_KEY=your_private_key`)
-    steps.push(`  ${pc.dim("→ Test with HTTPS: next dev --experimental-https")}`)
+    steps.push(pc.yellow("! PWA:"))
+    if (s.fe === "nextjs") {
+      steps.push(`  npx web-push generate-vapid-keys`)
+      steps.push(`  ${pc.dim("→ Copy output to .env.local:")}`)
+      steps.push(`  NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_public_key`)
+      steps.push(`  VAPID_PRIVATE_KEY=your_private_key`)
+      steps.push(`  ${pc.dim("→ Test with HTTPS: next dev --experimental-https")}`)
+    } else {
+      steps.push(`  Service worker auto-registered via vite-plugin-pwa`)
+      steps.push(`  Add icons to ${pc.cyan("public/icons/")} — icon-192.png and icon-512.png`)
+      steps.push(`  ${pc.dim("→ vite-pwa-org.netlify.app")}`)
+    }
   }
 
   clack.note(steps.join("\n"), "Next steps")

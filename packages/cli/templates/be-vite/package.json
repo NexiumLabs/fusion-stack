@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "serve": "tsx src/server/serve.ts"
+  },
+  "dependencies": {
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^1.12.0",
+    "tsx": "^4.0.0"
+  }
+}

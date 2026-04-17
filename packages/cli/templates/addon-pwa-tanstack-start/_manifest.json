@@ -1,0 +1,4 @@
+{
+  "name": "addon-pwa-tanstack-start",
+  "description": "PWA support for TanStack Start via vite-plugin-pwa"
+}

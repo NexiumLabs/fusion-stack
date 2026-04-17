@@ -21,8 +21,8 @@ program
   .description("Scaffold a TypeScript project from your fusion-stack selections")
   .version(version)
   .argument("[project-name]", "Name of the project to create")
-  .option("--frontend <value>",        "Frontend framework (nextjs | none)", "none")
-  .option("--backend <value>",         "Backend framework (convex | hono | nextjs | none)", "none")
+  .option("--frontend <value>",        "Frontend framework (nextjs | tanstack-start | vite-react | none)", "none")
+  .option("--backend <value>",         "Backend framework (convex | hono | nextjs | tanstack-start | vite | none)", "none")
   .option("--database <value>",        "Database (convex | postgresql | mongodb | mysql | sqlite | none)", "none")
   .option("--orm <value>",             "ORM (drizzle | prisma | mongoose | none)", "none")
   .option("--db-provider <value>",     "DB provider (supabase | neon | planetscale | none)", "none")
@@ -32,8 +32,9 @@ program
   .option("--addons <value>",          "Comma-separated addons (pwa)", "")
   .option("--skills <value>",          "Comma-separated skills.sh identifiers", "")
   .option("--api-layer <value>",       "API layer (trpc | orpc | none)", "none")
+  .option("--no-src-dir",             "Use root layout (app/ at root) instead of src/ — Next.js only")
   .option("--package-manager <value>", "Package manager (pnpm | npm)", DEFAULT_SELECTIONS.pm)
-  .action(async (projectNameArg: string | undefined, opts: Record<string, string>) => {
+  .action(async (projectNameArg: string | undefined, opts: Record<string, string | boolean>) => {
     const hasFlags =
       opts["frontend"] !== "none" ||
       opts["backend"] !== "none" ||
@@ -61,11 +62,11 @@ program
     }
 
     // Parse comma-separated addons
-    const addonsRaw = opts["addons"] ? opts["addons"].split(",").map((a) => a.trim()).filter(Boolean) : []
+    const addonsRaw = opts["addons"] ? (opts["addons"] as string).split(",").map((a) => a.trim()).filter(Boolean) : []
     const addons = addonsRaw.filter((a): a is "pwa" => a === "pwa")
 
     // Parse comma-separated skills
-    const skills = opts["skills"] ? opts["skills"].split(",").map((s) => s.trim()).filter(Boolean) : []
+    const skills = opts["skills"] ? (opts["skills"] as string).split(",").map((s) => s.trim()).filter(Boolean) : []
 
     // Flag mode — parse selections from CLI args
     const selections: Selections = {
@@ -82,6 +83,7 @@ program
       skills,
       pm:         (opts["packageManager"] as Selections["pm"])         ?? DEFAULT_SELECTIONS.pm,
       apiLayer:   (opts["apiLayer"]       as Selections["apiLayer"])   ?? DEFAULT_SELECTIONS.apiLayer,
+      srcDir:     opts["srcDir"] !== false,
     }
 
     // Validate — fail fast on incompatible selections

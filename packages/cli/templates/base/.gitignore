@@ -22,3 +22,6 @@ convex/_generated/
 # Misc
 .DS_Store
 *.tsbuildinfo
+
+# PWA push subscription store (dev only — swap for a real DB in production)
+.push-subscriptions.json
