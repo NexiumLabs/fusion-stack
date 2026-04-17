@@ -1,0 +1,4 @@
+# Generated test scaffolds — output from running the CLI locally
+fuse/
+dist/
+*.tsbuildinfo
