@@ -44,7 +44,28 @@
       "Bash(npx tsc:*)",
       "Bash(pnpm --filter web exec tsc --noEmit)",
       "WebFetch(domain:api.github.com)",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "Bash(find \"/c/Users/techy/development/fusion-stack/packages/cli/templates/auth-\"*\"-tanstack-start/\" -type f)",
+      "Bash(find \"/c/Users/techy/development/fusion-stack/packages/cli/templates/auth-\"*\"-vite/\" -type f)",
+      "Bash(grep -v \"^\\\\.$\")",
+      "Bash(pnpm add:*)",
+      "WebFetch(domain:tanstack.com)",
+      "WebFetch(domain:vitejs.dev)",
+      "WebFetch(domain:vite.dev)",
+      "Bash(pnpm -r exec tsc --noEmit)",
+      "Bash(grep -v \"^$\")",
+      "Bash(./node_modules/.bin/tsc --noEmit -p apps/web/tsconfig.json)",
+      "Bash(./node_modules/.bin/tsc --noEmit -p packages/cli/tsconfig.json)",
+      "Bash(node_modules/.bin/tsc --noEmit -p apps/web/tsconfig.json)",
+      "Bash(node_modules/.bin/tsc --noEmit -p packages/cli/tsconfig.json)",
+      "Bash(find C:\\\\Users\\\\techy\\\\development\\\\fusion-stack\\\\packages\\\\cli\\\\templates:*)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(npm list:*)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(echo \"web exit: $?\")",
+      "Bash(echo \"cli exit: $?\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(git add:*)"
     ]
   }
 }
