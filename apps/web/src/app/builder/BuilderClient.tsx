@@ -4,13 +4,62 @@ import { Sidebar } from "@/components/builder/Sidebar"
 import { StackSection } from "@/components/builder/StackSection"
 import { FolderPreview } from "@/components/builder/FolderPreview"
 import { useStackSelection } from "@/hooks/useStackSelection"
-import { STACKS } from "@/lib/stacks"
+import { STACKS, getIncompatible } from "@/lib/stacks"
 import type { Selections } from "@/lib/command"
+import { toast } from "sonner"
+import { AlertTriangle } from "lucide-react"
 
 export function BuilderClient() {
   const [selections, setSelections] = useStackSelection()
 
-  function handleSelect(categoryId: string, optionId: string) { setSelections({ [categoryId]: optionId }) }
+  function handleSelect(categoryId: string, optionId: string) {
+    const next = { ...selections, [categoryId]: optionId } as Record<string, string>
+    const current = selections as Record<string, string>
+
+    // Find currently-selected options that become incompatible after this change
+    const nowBlocked: string[] = []
+    for (const cat of STACKS) {
+      if (cat.id === categoryId) continue
+      const selOptId = current[cat.id]
+      if (!selOptId || selOptId === "none") continue
+
+      // Multi-select: check each selected value
+      const ids = cat.multi
+        ? selOptId.split(",").filter((v) => v && v !== "none")
+        : [selOptId]
+
+      for (const id of ids) {
+        const wasFine = !getIncompatible(id, cat.id, current)
+        const nowBad  = getIncompatible(id, cat.id, next)
+        if (wasFine && nowBad) {
+          const opt = cat.options.find((o) => o.id === id)
+          if (opt) nowBlocked.push(opt.label)
+        }
+      }
+    }
+
+    if (nowBlocked.length > 0) {
+      const pickedLabel =
+        STACKS.find((c) => c.id === categoryId)?.options.find((o) => o.id === optionId)?.label
+        ?? optionId
+
+      toast.warning(
+        nowBlocked.length === 1
+          ? `${nowBlocked[0]} is not available with ${pickedLabel}`
+          : `${nowBlocked.join(", ")} are not available with ${pickedLabel}`,
+        {
+          description: nowBlocked.length === 1
+            ? "This option is grayed out in your current setup."
+            : "These options are grayed out in your current setup.",
+          icon: <AlertTriangle size={15} className="text-amber-400" />,
+          duration: 5000,
+        }
+      )
+    }
+
+    setSelections({ [categoryId]: optionId })
+  }
+
   function handleChange(updates: Partial<Selections>) { setSelections(updates as Partial<typeof selections>) }
 
   return (

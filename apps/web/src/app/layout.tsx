@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
+import { Toaster } from "sonner"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -33,6 +34,20 @@ export default function RootLayout({
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
           <Footer />
+          <Toaster
+            theme="dark"
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: "rgba(9,11,12,0.92)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#F8FAFA",
+                backdropFilter: "blur(14px)",
+                fontFamily: "var(--font-geist-sans)",
+                fontSize: "13px",
+              },
+            }}
+          />
         </NuqsAdapter>
       </body>
     </html>
