@@ -1,13 +1,13 @@
 ---
 title: oRPC
-description: OpenAPI-compatible, Zod-first RPC for Next.js — type-safe procedures that double as a documented REST API.
+description: OpenAPI-compatible, Zod-first RPC for any frontend — type-safe procedures that double as a documented REST API.
 ---
 
 ## Overview
 
 **oRPC** is a type-safe RPC library built around Zod and the OpenAPI standard. Every procedure you define is automatically a typed, validating endpoint — and you can optionally generate a full OpenAPI spec from your router with no extra work.
 
-Fusion Stack scaffolds a complete oRPC setup inside your Next.js App Router.
+Fusion Stack scaffolds a complete oRPC setup tailored to your chosen frontend and backend.
 
 ## Scaffolded Structure
 
@@ -156,8 +156,39 @@ Install the optional package:
 pnpm add @orpc/openapi
 ```
 
+## TanStack Start
+
+When your frontend is **TanStack Start**, oRPC mounts via `createAPIFileRoute`:
+
+```ts
+// app/routes/api/orpc.ts
+import { createAPIFileRoute } from "@tanstack/start/api"
+import { RPCHandler } from "@orpc/server/fetch"
+import { appRouter } from "../../server/routers/index"
+
+const handler = new RPCHandler(appRouter)
+
+export const APIRoute = createAPIFileRoute("/api/orpc/$")({
+  GET: ({ request }) => handler.handle(request, { prefix: "/api/orpc", context: {} }).then(r => r.response ?? new Response("Not found", { status: 404 })),
+  POST: ({ request }) => handler.handle(request, { prefix: "/api/orpc", context: {} }).then(r => r.response ?? new Response("Not found", { status: 404 })),
+})
+```
+
+Wrap `app/routes/__root.tsx` with `ORPCProvider` from `@/app/lib/orpc/provider`.
+
+## Vite React
+
+When your frontend is **Vite React**, oRPC is served via the Hono backend on port `:3001`. Use the `orpc-hono.ts` helper in `src/server/`:
+
+```ts
+import { orpcHonoHandler } from "./orpc-hono"
+
+app.use("/api/orpc/*", (c) => orpcHonoHandler(c))
+```
+
+Wrap `src/main.tsx` with `ORPCProvider` from `@/lib/orpc/provider`.
+
 ## Compatibility
 
-- ✅ Works with: Next.js API Routes, Clerk, WorkOS, Better Auth, shadcn/ui
+- ✅ Works with: Next.js API Routes, TanStack Start (built-in), Hono, Clerk, WorkOS, Better Auth, shadcn/ui
 - ❌ Not compatible with: Convex backend (Convex has its own type-safe RPC system)
-- ℹ️ Hono support: mount the `RPCHandler` on a Hono route using `@orpc/server/fetch`

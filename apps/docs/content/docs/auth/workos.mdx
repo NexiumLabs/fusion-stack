@@ -97,12 +97,14 @@ export default async function ProfilePage() {
 
 ## Protecting Specific Routes
 
-By default `authkitMiddleware` applies to all matched routes. To make some routes public, pass a `redirectUri` matcher:
+By default `authkitMiddleware` redirects unauthenticated users on all matched routes. To make some routes public, use `middlewareAuth.unauthenticatedPaths`:
 
 ```ts
 export default authkitMiddleware({
-  // Routes that don't require authentication
-  publicPaths: ["/", "/about", "/sign-in"],
+  middlewareAuth: {
+    enabled: true,
+    unauthenticatedPaths: ["/", "/about", "/sign-in"],
+  },
 })
 ```
 

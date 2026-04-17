@@ -1,15 +1,19 @@
 ---
 title: tRPC
-description: Add end-to-end type-safe APIs to your Next.js or Hono backend — no schemas, no code generation, just TypeScript.
+description: Add end-to-end type-safe APIs to any frontend — Next.js, TanStack Start, or Vite React — no schemas, no code generation, just TypeScript.
 ---
 
 ## Overview
 
 **tRPC** lets you build fully type-safe APIs without a schema language or code generation step. Your router is defined in TypeScript and the client infers all types automatically — if you rename a procedure or change its input, TypeScript will catch the mismatch instantly.
 
-Fusion Stack scaffolds a complete tRPC v11 setup on top of your chosen backend.
+Fusion Stack scaffolds a complete tRPC v11 setup tailored to your chosen frontend and backend.
 
 ## Scaffolded Structure
+
+The file paths vary by frontend:
+
+**Next.js** (default `src/` layout — drop `src/` prefix with `--no-src-dir`):
 
 > **Note:** Paths below use the default `src/` layout. If you chose the **root layout** (`--no-src-dir`), drop the `src/` prefix — e.g. `server/` instead of `src/server/`.
 
@@ -160,7 +164,37 @@ const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 })
 ```
 
+## TanStack Start
+
+When your frontend is **TanStack Start**, tRPC mounts via `createAPIFileRoute` — no separate server needed:
+
+```ts
+// app/routes/api/trpc.ts
+import { createAPIFileRoute } from "@tanstack/start/api"
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
+import { appRouter } from "../../server/routers/index"
+
+export const APIRoute = createAPIFileRoute("/api/trpc/$")({
+  GET: ({ request }) => fetchRequestHandler({ endpoint: "/api/trpc", req: request, router: appRouter, createContext: () => ({}) }),
+  POST: ({ request }) => fetchRequestHandler({ endpoint: "/api/trpc", req: request, router: appRouter, createContext: () => ({}) }),
+})
+```
+
+Wrap `app/routes/__root.tsx` with `TRPCProvider` from `@/app/lib/trpc/provider`.
+
+## Vite React
+
+When your frontend is **Vite React**, tRPC is served via the Hono backend on port `:3001`. Mount the handler in `src/server/index.ts`:
+
+```ts
+import { trpcHonoHandler } from "./trpc-hono"
+
+app.use("/trpc/*", trpcHonoHandler)
+```
+
+Wrap `src/main.tsx` with `TRPCProvider` from `@/lib/trpc/provider`.
+
 ## Compatibility
 
-- ✅ Works with: Next.js API Routes, Hono, Clerk, WorkOS, Better Auth, shadcn/ui
+- ✅ Works with: Next.js API Routes, TanStack Start (built-in), Hono, Clerk, WorkOS, Better Auth, shadcn/ui
 - ❌ Not compatible with: Convex backend (Convex has its own type-safe RPC system)

@@ -1,0 +1,159 @@
+---
+title: Vite + React
+description: Fast React SPA powered by Vite — pair it with any backend or use it standalone. Supports all auth providers, databases, and ORMs.
+---
+
+## Overview
+
+When you select **Vite + React** as your frontend, Fusion Stack scaffolds a React 19 SPA using Vite 6 with the `@vitejs/plugin-react` plugin, Tailwind CSS v4, and full TypeScript support.
+
+Vite React is client-side only — it doesn't render on the server. You can pair it with:
+- **Vite (built-in)** — Hono API runs inside the Vite dev server via `configureServer` — single port, no concurrently
+- **Hono** — Node.js API server running on port `:3001` (separate process, `concurrently`)
+- **Convex** — cloud-hosted reactive backend (no extra dev server)
+- **None** — purely frontend, connect your own API
+
+## Scaffolded Structure
+
+```
+src/
+  main.tsx              # Entry point — createRoot + StrictMode
+  App.tsx               # Root component with {{PROJECT_NAME}} landing
+  index.css             # @import "tailwindcss";
+  lib/                  # Added per stack choice (auth, db, email, etc.)
+  components/           # Added if shadcn/ui selected
+  server/               # Added if Hono backend selected
+    index.ts            # Hono server on port 3001
+    routes/
+    middleware/
+public/
+  favicon.ico
+index.html              # Vite entry HTML
+vite.config.ts          # React plugin, Tailwind plugin, @/* alias, /api proxy
+tsconfig.json           # References tsconfig.app.json + tsconfig.node.json
+tsconfig.app.json       # Browser TS config — bundler moduleResolution
+tsconfig.node.json      # Node TS config — for vite.config.ts
+package.json
+```
+
+## Scripts
+
+| Script | Command |
+|--------|---------|
+| `dev` | `vite` |
+| `build` | `tsc -b && vite build` |
+| `preview` | `vite preview` |
+
+When a **Hono** backend is also selected, `dev` becomes:
+
+```bash
+concurrently "vite" "tsx watch src/server/index.ts"
+```
+
+Use `dev:client` or `dev:server` to run them individually.
+
+## Path Alias
+
+The `@` alias maps to `./src/`:
+
+```ts
+import { authClient } from "@/lib/auth-client"
+import { cn } from "@/lib/utils"
+```
+
+## API Proxy
+
+`vite.config.ts` includes a proxy so fetch calls to `/api` in the browser are forwarded to the Hono server at `localhost:3001` during development:
+
+```ts
+server: {
+  proxy: {
+    "/api": "http://localhost:3001",
+  },
+},
+```
+
+This means your React code can call `/api/users` without worrying about CORS in development.
+
+## Tailwind CSS v4
+
+Tailwind is loaded via the `@tailwindcss/vite` plugin. No `tailwind.config.ts` is needed. Styles are imported in `src/index.css`:
+
+```css
+@import "tailwindcss";
+```
+
+## Auth Integration
+
+Fusion Stack scaffolds the correct auth setup for each provider:
+
+| Auth | Package | Integration |
+|------|---------|-------------|
+| Clerk | `@clerk/react` + `@clerk/backend` | `ClerkProvider` wraps `main.tsx`; Hono middleware in `src/server/middleware/clerk.ts` validates tokens server-side |
+| Better Auth | `better-auth` | Server: mounted in Hono at `/api/auth/**`; Client: `auth-client.ts` via `createAuthClient()` |
+| WorkOS | `@workos-inc/authkit-react` + `@workos-inc/node` | `AuthKitProvider` wraps `main.tsx`; Hono routes handle OAuth flow |
+
+## Environment Variables
+
+Vite uses the **`VITE_`** prefix for variables that are exposed to the browser:
+
+```bash
+# Clerk
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# WorkOS
+VITE_WORKOS_CLIENT_ID=client_...
+WORKOS_API_KEY=sk_...
+WORKOS_CLIENT_ID=client_...
+
+# Better Auth
+AUTH_SECRET=...
+
+# Database (if selected)
+DATABASE_URL=...
+```
+
+> **Security:** Never prefix a secret key with `VITE_` — it will be bundled into the client JavaScript and exposed publicly.
+
+## Adding Routing
+
+Vite React is scaffold without a client-side router by default. To add one:
+
+```bash
+# TanStack Router (recommended for type-safety)
+pnpm add @tanstack/react-router
+
+# React Router v7
+pnpm add react-router
+```
+
+Or consider switching to [TanStack Start](/docs/frontend/tanstack-start) if you need file-based routing and server-side rendering.
+
+## PWA Support
+
+When the **PWA** addon is selected, `vite-plugin-pwa` is added and pre-configured in `vite.config.ts` with a web manifest and auto-registering service worker:
+
+```ts
+VitePWA({
+  registerType: "autoUpdate",
+  manifest: {
+    name: "{{PROJECT_NAME}}",
+    display: "standalone",
+    icons: [
+      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+})
+```
+
+Add your app icons to `public/icons/` to complete the setup.
+
+## Local URLs
+
+| Service | URL |
+|---------|-----|
+| Vite dev server | `http://localhost:5173` |
+| Hono API (if selected) | `http://localhost:3001` |
+| Convex dashboard (if selected) | `https://dashboard.convex.dev` |

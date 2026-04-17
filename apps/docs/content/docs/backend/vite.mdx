@@ -1,0 +1,93 @@
+---
+title: Vite (Built-in API)
+description: Run a Hono API inside the Vite dev server via configureServer — single port, no concurrently, no separate process.
+---
+
+## Overview
+
+Selecting **Vite (built-in)** as your backend adds a Hono API that runs inside the Vite dev server during development and a Node.js server for production. Everything runs on a single port — no `concurrently`, no second terminal, no CORS configuration.
+
+> This option is only available when your frontend is **Vite React**. For a standalone Node.js server (separate port, separate process), choose **Hono** instead.
+
+## How It Works
+
+In development, a Vite plugin intercepts `/api/*` requests before they reach the browser:
+
+```
+Browser → Vite dev server (:5173)
+  ├─ /           → React SPA (Vite HMR)
+  └─ /api/*      → Hono app (same process, no network hop)
+```
+
+In production, a Node.js server serves both the Vite build and the API:
+
+```
+pnpm build        # → dist/
+pnpm serve        # → Hono serves dist/ + /api/* from one port
+```
+
+## Scaffolded Structure
+
+```
+src/
+  server/
+    api.ts          # Hono app factory — add routes here
+    plugin.ts       # Vite configureServer plugin
+    serve.ts        # Production server (serves dist/ + API)
+vite.config.ts      # Extended to include apiPlugin()
+```
+
+## Adding API Routes
+
+All routes go in `src/server/api.ts`:
+
+```ts
+import { Hono } from "hono"
+import { cors } from "hono/cors"
+
+export function createApiApp(): Hono {
+  const app = new Hono().basePath("/api")
+
+  app.use("*", cors())
+
+  app.get("/health", (c) => c.json({ status: "ok" }))
+
+  // Add your routes here:
+  app.get("/posts", async (c) => {
+    const posts = await db.query.posts.findMany()
+    return c.json(posts)
+  })
+
+  return app
+}
+```
+
+Call from your React components using plain fetch — no CORS configuration needed:
+
+```ts
+const res = await fetch("/api/posts")
+const posts = await res.json()
+```
+
+## Pairing with an API Layer
+
+Combine with **tRPC** or **oRPC** for full type safety. The API layer mounts inside the Hono app automatically:
+
+| API Layer | Endpoint |
+|-----------|----------|
+| tRPC | `/api/trpc/*` — mounted via `@hono/trpc-server` |
+| oRPC | `/api/orpc/*` — mounted via `@orpc/server/fetch` |
+
+## Scripts
+
+| Script | Command |
+|--------|---------|
+| `dev` | `vite` (API + frontend, single port) |
+| `build` | `tsc -b && vite build` |
+| `serve` | `tsx src/server/serve.ts` (production) |
+
+## Compatibility
+
+- ✅ Works with: Clerk, WorkOS, Better Auth, Resend, shadcn/ui, tRPC, oRPC, Drizzle, Prisma, Mongoose
+- ❌ Convex DB is **not available** — Convex requires the Convex backend
+- ❌ Cannot be combined with Next.js or TanStack Start frontends

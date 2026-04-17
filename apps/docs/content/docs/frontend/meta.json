@@ -1,4 +1,4 @@
 {
   "title": "Frontend",
-  "pages": ["nextjs"]
+  "pages": ["nextjs", "tanstack-start", "vite-react"]
 }

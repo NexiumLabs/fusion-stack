@@ -1,0 +1,89 @@
+---
+title: TanStack Start (Built-in)
+description: Use TanStack Start's native API routes and server functions as your backend — no separate server process, full-stack in a single project.
+---
+
+## Overview
+
+Selecting **TanStack Start (built-in)** as your backend means you're using TanStack Start's native server capabilities — `createAPIFileRoute` for HTTP endpoints and `createServerFn` for server functions. No separate server process is needed.
+
+This is the idiomatic backend for TanStack Start projects: API logic lives alongside your routes in `app/routes/api/`, and server functions can be called directly from any component or route loader.
+
+> This option is only available when your frontend is **TanStack Start**. For a standalone Node.js API server alongside TanStack Start, choose **Hono** instead.
+
+## Scaffolded Structure
+
+```
+app/
+  routes/
+    api/
+      health.ts       # GET /api/health — starter endpoint
+  server/
+    functions.ts      # Example server function via createServerFn
+```
+
+## API Routes
+
+API routes use `createAPIFileRoute` and live in `app/routes/api/`:
+
+```ts
+// app/routes/api/health.ts
+import { createAPIFileRoute } from "@tanstack/start/api"
+
+export const APIRoute = createAPIFileRoute("/api/health")({
+  GET: () => Response.json({ status: "ok" }),
+})
+```
+
+File-based routing applies here too — the file path determines the URL:
+
+| File | URL |
+|------|-----|
+| `app/routes/api/health.ts` | `GET /api/health` |
+| `app/routes/api/posts.ts` | `GET /api/posts` |
+| `app/routes/api/posts/$id.ts` | `GET /api/posts/:id` |
+
+## Server Functions
+
+Server functions run exclusively on the server. Call them from any component, route loader, or server action — they are automatically serialized over the network:
+
+```ts
+// app/server/functions.ts
+import { createServerFn } from "@tanstack/start"
+
+export const getServerMessage = createServerFn().handler(async () => {
+  // Safe to use DB connections, secrets, etc.
+  return { message: "Hello from the server" }
+})
+```
+
+```tsx
+// app/routes/index.tsx — call in a route loader
+import { createFileRoute } from "@tanstack/react-router"
+import { getServerMessage } from "@/app/server/functions"
+
+export const Route = createFileRoute("/")({
+  loader: () => getServerMessage(),
+  component: () => {
+    const data = Route.useLoaderData()
+    return <p>{data.message}</p>
+  },
+})
+```
+
+## Pairing with an API Layer
+
+For end-to-end type safety, combine the built-in backend with **tRPC** or **oRPC**. Both mount their handlers via `createAPIFileRoute`:
+
+| API Layer | Handler location |
+|-----------|-----------------|
+| tRPC | `app/routes/api/trpc.ts` — `fetchRequestHandler` via `createAPIFileRoute("/api/trpc/$")` |
+| oRPC | `app/routes/api/orpc.ts` — `RPCHandler` via `createAPIFileRoute("/api/orpc/$")` |
+
+See the [tRPC](/docs/api-layer/trpc) and [oRPC](/docs/api-layer/orpc) docs for setup details.
+
+## Compatibility
+
+- ✅ Works with: Clerk, WorkOS, Better Auth, Resend, shadcn/ui, tRPC, oRPC, Drizzle, Prisma, Mongoose
+- ❌ Convex DB is **not available** — Convex requires the Convex backend
+- ❌ Cannot be combined with Next.js or Vite React frontends — this backend type is TanStack Start only
