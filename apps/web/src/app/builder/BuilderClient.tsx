@@ -63,7 +63,7 @@ export function BuilderClient() {
   function handleChange(updates: Partial<Selections>) { setSelections(updates as Partial<typeof selections>) }
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden">
       {/* Left sidebar — project controls */}
       <div
         className="hidden w-64 shrink-0 border-r border-white/[0.05] lg:flex lg:flex-col"

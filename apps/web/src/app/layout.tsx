@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Navbar } from "@/components/layout/Navbar"
-import { Footer } from "@/components/layout/Footer"
 import { Toaster } from "sonner"
 import "./globals.css"
 
@@ -33,7 +32,6 @@ export default function RootLayout({
         <NuqsAdapter>
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
-          <Footer />
           <Toaster
             theme="dark"
             position="bottom-right"

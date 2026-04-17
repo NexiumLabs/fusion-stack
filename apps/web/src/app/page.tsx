@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowRight, Terminal, Layers, Zap } from "lucide-react"
 import { STACKS } from "@/lib/stacks"
 import { getStackIcon } from "@/lib/stack-icons"
+import { Footer } from "@/components/layout/Footer"
 
 // Docs is a separate app — use <a>, never <Link>
 const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? "https://fusion-stack-docs.vercel.app"
@@ -191,6 +192,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      <Footer />
     </div>
   )
 }

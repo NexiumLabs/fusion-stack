@@ -11,7 +11,7 @@ export default function BuilderPage() {
 
 function BuilderSkeleton() {
   return (
-    <div className="flex flex-1 animate-pulse">
+    <div className="flex h-[calc(100dvh-3.5rem)] animate-pulse">
       <div className="hidden w-64 shrink-0 border-r border-white/10 lg:block" />
       <div className="flex flex-1 flex-col gap-8 px-6 py-8">
         {Array.from({ length: 4 }).map((_, i) => (
