@@ -7,6 +7,8 @@ import { mergePackageJsons } from "./merge.js"
 import { runInstall } from "./install.js"
 import { printNextSteps } from "./postSteps.js"
 import { installSkills } from "./installSkills.js"
+import { buildGitignore } from "./gitignore.js"
+import { initGit } from "./git.js"
 import type { Selections } from "./types.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -264,7 +266,15 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
     await flattenSrcDir(targetDir)
   }
 
+  // 9b. Write final .gitignore — programmatic generation wins over any slice copy
+  await fse.writeFile(path.join(targetDir, ".gitignore"), buildGitignore(s), "utf-8")
+
   clack.log.step("Project files written.")
+
+  // 9c. Initialize git repository
+  if (s.git) {
+    await initGit(targetDir)
+  }
 
   // 10. Install dependencies
   await runInstall(targetDir, s.pm)

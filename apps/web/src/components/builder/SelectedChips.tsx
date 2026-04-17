@@ -31,6 +31,9 @@ export function SelectedChips({ selections, onRemove }: SelectedChipsProps) {
       if (!value || value === "none") continue
       const option = category.options.find((o) => o.id === value)
       if (!option) continue
+      // For boolean-toggle categories (hideChipWhenDefault): skip the chip when the
+      // default option is active — only show it when the non-default value is chosen.
+      if (category.hideChipWhenDefault && option.default) continue
       chips.push({
         key: category.id,
         label: option.label,

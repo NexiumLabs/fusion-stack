@@ -14,6 +14,12 @@ export type StackCategory = {
   label: string
   /** If true, multiple options can be active simultaneously (stored as comma-separated string) */
   multi?: boolean
+  /**
+   * If true, the chip for this category is hidden when the default option is selected.
+   * Use for boolean toggles (e.g. git) where the "yes" state is not worth showing.
+   * The chip still appears when a non-default option is active.
+   */
+  hideChipWhenDefault?: boolean
   options: StackOption[]
 }
 
@@ -389,6 +395,26 @@ export const STACKS: StackCategory[] = [
         description: "Utility-first styling, design systems, and responsive layouts",
         icon: "skill",
         isNew: true,
+      },
+    ],
+  },
+  {
+    id: "git",
+    label: "Git",
+    hideChipWhenDefault: true,
+    options: [
+      {
+        id: "yes",
+        label: "Initialize Git",
+        description: "Run git init + create an initial commit with all scaffolded files",
+        icon: "git",
+        default: true,
+      },
+      {
+        id: "no",
+        label: "Skip",
+        description: "No git initialization — set it up yourself",
+        icon: "none",
       },
     ],
   },

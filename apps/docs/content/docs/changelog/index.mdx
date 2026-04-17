@@ -1,0 +1,40 @@
+---
+title: Changelog
+description: Full release history for create-fusion-stack — every minor and patch version.
+---
+
+import { Accordions, Accordion } from 'fumadocs-ui/components/accordion'
+
+All notable changes to `create-fusion-stack`. Click a version to expand its summary, or open the linked page for the full release notes.
+
+---
+
+<Accordions type="single">
+
+<Accordion title="0.4.0 — TanStack Start & Vite React (upcoming)">
+
+**New frontends:** TanStack Start and Vite + React are now first-class citizens. Every auth provider (Clerk, WorkOS, Better Auth) ships a dedicated slice for each new frontend — no combination is blocked.
+
+**Bug fixes:** Duplicate `src/` nodes in folder preview, wrong WorkOS redirect URIs, `fe:none` showing `vite` backend in CLI, randomize button ignoring compatibility rules.
+
+[Full release notes →](/docs/changelog/v0-4-0)
+
+</Accordion>
+
+<Accordion title="0.3.0 — WorkOS AuthKit">
+
+**New auth provider:** WorkOS AuthKit support (`--auth workos`) for Next.js projects, using `@workos-inc/authkit-nextjs` middleware with session cookie handling.
+
+[Full release notes →](/docs/changelog/v0-3-0)
+
+</Accordion>
+
+<Accordion title="0.2.0 — Open Source Launch">
+
+**Initial public release** of `create-fusion-stack`. Ships Next.js + Convex, Clerk, Better Auth, Drizzle, Prisma, Mongoose, tRPC, oRPC, shadcn/ui, Resend, PWA, and the visual stack builder.
+
+[Full release notes →](/docs/changelog/v0-2-0)
+
+</Accordion>
+
+</Accordions>

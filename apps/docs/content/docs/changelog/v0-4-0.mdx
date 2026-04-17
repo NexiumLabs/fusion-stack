@@ -1,0 +1,75 @@
+---
+title: "0.4.0 — TanStack Start & Vite React"
+description: Adds TanStack Start and Vite React frontends, six new auth slices, a Vite shadcn/ui slice, and nine bug fixes.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout'
+
+<Callout type="info">This version is **upcoming** — pending changeset publish.</Callout>
+
+## Added
+
+### TanStack Start frontend (`--frontend tanstack-start`)
+
+Vinxi-based full-stack React framework with file-based routing (`app/routes/`), server functions via `createServerFn`, and Tailwind CSS v4. Scaffolds:
+
+```
+app/
+  routes/
+    __root.tsx     # root document + layout
+    index.tsx      # home page
+  client.tsx       # browser entry (hydrateRoot + StartClient)
+  router.tsx       # createRouter + routeTree
+  ssr.tsx          # createStartHandler
+  globals.css      # @import "tailwindcss"
+app.config.ts      # Vinxi config + @tailwindcss/vite
+tsconfig.json
+.gitignore         # includes .vinxi/ and app/routeTree.gen.ts
+```
+
+Dev server runs on `:3000`. When paired with Hono, `dev` becomes `concurrently "vinxi dev" "tsx watch src/server/index.ts"` with Hono on `:3001`.
+
+### Vite + React frontend (`--frontend vite-react`)
+
+Standard Vite React SPA with Tailwind CSS v4. Three backend modes:
+
+| Backend | Behaviour |
+|---|---|
+| `none` | `vite dev` only — pure SPA on `:5173` |
+| `hono` | Separate Hono server on `:3001`; `concurrently` runs both |
+| `vite` (built-in) | Hono mounted inside Vite `configureServer` — single port `:5173` |
+
+### New auth slices
+
+Six new template slices cover every auth provider × new frontend combination:
+
+| Slice | Package(s) |
+|---|---|
+| `auth-clerk-tanstack-start` | `@clerk/tanstack-start` |
+| `auth-clerk-vite` | `@clerk/react` (+ `@clerk/backend` if `be:hono`) |
+| `auth-better-auth-tanstack-start` | `better-auth` — `createAPIFileRoute` mounts handler at `/api/auth/$` |
+| `auth-better-auth-vite` | `better-auth` — Hono mounts handler or embedded server |
+| `auth-workos-tanstack-start` | `@workos-inc/node` — server function handles OAuth callback |
+| `auth-workos-vite` | `@workos-inc/authkit-react` (+ `@workos-inc/node` if `be:hono`) |
+
+### `ui-shadcn-vite` slice
+
+Dedicated shadcn/ui slice for Vite React with correct `src/` path aliases (`@/components/ui`, `@/lib/utils`) and `rsc: false` in `components.json`.
+
+### Full frontend × auth compatibility
+
+All auth providers now work with all frontends. No frontend choice blocks any auth option.
+
+---
+
+## Fixed
+
+- **Duplicate `src/` in TanStack Start + Hono + Drizzle** — folder preview emitted two separate `src/` nodes; fixed by merging server and db children into a single accumulator before sealing the node
+- **Duplicate `src/` in Vite React + Drizzle** — same root cause; fixed by pushing `db/` into `viteSrcChildren` before constructing the `src/` node
+- **Duplicate `routes/` + `middleware/` in Vite React + Hono + Clerk/WorkOS** — auth files were pushed after the folder nodes were constructed; fixed by building children arrays first
+- **`fe:none` showing `vite` backend in CLI** — the `else` fallback branch included `vite` even when no frontend was selected; split into explicit `vite-react` and `none` branches
+- **Vite React + shadcn using Next.js slice** — `generate.ts` was falling through to `ui-shadcn` (Next.js/RSC); now routes to `ui-shadcn-vite`
+- **Randomize button ignoring compatibility** — the web builder's randomize function picked random values without checking `getIncompatible()`; a single-pass resolution loop now clears invalid picks after randomization
+- **`sw.js` shown for non-Next.js PWA** — folder preview added `public/sw.js` for all frontends; vite-plugin-pwa auto-generates its own manifest so `sw.js` is now gated to `fe === "nextjs"` only
+- **WorkOS redirect URI missing for Vite React + Convex** — post-steps WorkOS block now has four explicit branches covering all frontend × backend combinations
+- **Missing `VITE_APP_URL` in Better Auth `.env.example`** — both `auth-better-auth-tanstack-start` and `auth-better-auth-vite` templates now include the variable with correct localhost defaults (`:3000` and `:5173` respectively)

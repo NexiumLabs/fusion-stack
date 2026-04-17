@@ -15,4 +15,5 @@ export const DEFAULT_SELECTIONS: Selections = {
   pm: "pnpm",
   apiLayer: "none",
   srcDir: true,
+  git: true,
 }

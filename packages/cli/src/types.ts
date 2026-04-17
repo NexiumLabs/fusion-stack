@@ -14,4 +14,6 @@ export type Selections = {
   apiLayer: "trpc" | "orpc" | "none"
   /** Next.js only — false means root layout (app/ at root), true means src/ layout */
   srcDir: boolean
+  /** Whether to run git init + initial commit after scaffolding (default: true) */
+  git: boolean
 }

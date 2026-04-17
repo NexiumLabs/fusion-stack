@@ -1,0 +1,55 @@
+---
+title: "0.2.0 — Open Source Launch"
+description: Initial public release of create-fusion-stack with full-stack TypeScript scaffolding.
+---
+
+## Initial Release
+
+The first public release of `create-fusion-stack` — a CLI and visual builder for composing full-stack TypeScript project starters.
+
+## What shipped
+
+### Frontends
+- **Next.js** (App Router) — Tailwind CSS 4, TypeScript, `@` alias to `src/`
+
+### Backends
+- **Convex** — cloud backend with `convex/` functions directory and `ConvexProvider` wired up
+- **Hono** — standalone API server on `:3001` with `concurrently` dev setup
+- **Next.js API Routes** — handlers in `src/app/api/`
+
+### Auth
+- **Clerk** — `@clerk/nextjs` middleware, `ClerkProvider` in root layout
+- **Better Auth** — `betterAuth()` server config, `createAuthClient()` browser client, API route handler
+
+### API layers
+- **tRPC** — router in `src/server/routers/`, `TRPCProvider`, typed client
+- **oRPC** — router in `src/server/routers/`, `ORPCProvider`, typed client
+
+### Databases
+- **PostgreSQL**, **MySQL**, **SQLite**, **MongoDB** — engine options
+- **Convex** — cloud document database (requires Convex backend)
+
+### ORMs
+- **Drizzle** — schema in `src/db/`, `db:push` and `db:studio` scripts
+- **Prisma** — schema in `prisma/schema.prisma`, client generation wired
+- **Mongoose** — models in `src/models/`, `MONGODB_URI` env setup
+
+### DB providers
+- **Neon** — serverless PostgreSQL
+- **Supabase** — PostgreSQL + auth + storage
+- **PlanetScale** — serverless MySQL
+
+### UI
+- **shadcn/ui** — `components.json` pre-configured, `cn()` utility, starter components (`button`, `card`, `input`, `dialog`)
+
+### Email
+- **Resend** — `@resend/react` client, example send function, `RESEND_API_KEY` env hint
+
+### Addons
+- **PWA** (Next.js) — `manifest.ts`, service worker, push notification server actions, VAPID key setup
+
+### Tooling
+- Interactive CLI prompts via `@clack/prompts`
+- Colored post-scaffold next steps via `picocolors`
+- `pnpm` and `npm` package manager support
+- Visual stack builder at [fusion-stack.vercel.app/builder](https://fusion-stack.vercel.app/builder) — pick your stack, copy the generated command

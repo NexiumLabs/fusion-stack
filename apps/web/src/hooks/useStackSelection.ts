@@ -17,6 +17,8 @@ export const defaultSelections = {
   addons:      "none",
   /** "yes" = use src/ directory layout (default), "no" = flat root layout */
   src:         "yes",
+  /** "yes" = run git init + initial commit (default), "no" = skip */
+  git:         "yes",
   pm:          "pnpm",
 }
 
@@ -34,6 +36,7 @@ export function useStackSelection() {
     email:       parseAsString.withDefault(defaultSelections.email),
     addons:      parseAsString.withDefault(defaultSelections.addons),
     src:         parseAsString.withDefault(defaultSelections.src),
+    git:         parseAsString.withDefault(defaultSelections.git),
     pm:          parseAsString.withDefault(defaultSelections.pm),
   })
 }

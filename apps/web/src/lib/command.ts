@@ -13,6 +13,8 @@ export type Selections = {
   addons:      string
   /** "yes" = use src/ directory layout (default), "no" = flat root layout */
   src:         string
+  /** "yes" = run git init + initial commit (default), "no" = skip */
+  git:         string
   pm:          string
 }
 
@@ -58,6 +60,7 @@ export function buildCommand(selections: Selections): string {
   if (skillIds.length > 0)      flags.push(`--skills ${skillIds.join(",")}`)
 
   if (selections.fe === "nextjs" && selections.src === "no") flags.push("--no-src-dir")
+  if (selections.git === "no") flags.push("--no-git")
 
   flags.push(`--package-manager ${selections.pm}`)
 

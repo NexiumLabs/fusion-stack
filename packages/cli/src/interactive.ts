@@ -25,7 +25,7 @@ const SKILLS_CATALOG = [
   { value: "tailwind-skills/core",        label: "Tailwind CSS",                 hint: "Utility-first styling and design systems" },
 ]
 
-export async function runInteractive(): Promise<void> {
+export async function runInteractive(overrides: { git?: boolean } = {}): Promise<void> {
   clack.intro(`${pc.bgCyan(pc.black(" >_ fusion-stack "))}`)
 
   // Project name
@@ -283,7 +283,7 @@ export async function runInteractive(): Promise<void> {
   if (isCancel(pmRaw)) abort()
   const pm = pmRaw as Selections["pm"]
 
-  const raw: Selections = { projectName, fe, be, db, orm, dbProvider, auth, ui, email, addons, skills, pm, apiLayer, srcDir }
+  const raw: Selections = { projectName, fe, be, db, orm, dbProvider, auth, ui, email, addons, skills, pm, apiLayer, srcDir, git: overrides.git ?? true }
   const selections = autoResolve(raw)
 
   const targetDir = path.resolve(process.cwd(), selections.projectName)

@@ -33,6 +33,7 @@ program
   .option("--skills <value>",          "Comma-separated skills.sh identifiers", "")
   .option("--api-layer <value>",       "API layer (trpc | orpc | none)", "none")
   .option("--no-src-dir",             "Use root layout (app/ at root) instead of src/ — Next.js only")
+  .option("--no-git",                 "Skip git init and initial commit")
   .option("--package-manager <value>", "Package manager (pnpm | npm)", DEFAULT_SELECTIONS.pm)
   .action(async (projectNameArg: string | undefined, opts: Record<string, string | boolean>) => {
     const hasFlags =
@@ -50,7 +51,7 @@ program
 
     // No args and no meaningful flags → interactive mode
     if (!projectNameArg && !hasFlags) {
-      await runInteractive()
+      await runInteractive({ git: opts["git"] !== false })
       return
     }
 
@@ -84,6 +85,7 @@ program
       pm:         (opts["packageManager"] as Selections["pm"])         ?? DEFAULT_SELECTIONS.pm,
       apiLayer:   (opts["apiLayer"]       as Selections["apiLayer"])   ?? DEFAULT_SELECTIONS.apiLayer,
       srcDir:     opts["srcDir"] !== false,
+      git:        opts["git"] !== false,
     }
 
     // Validate — fail fast on incompatible selections

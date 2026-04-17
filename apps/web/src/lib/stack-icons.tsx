@@ -438,6 +438,22 @@ function SkillIcon({ size }: { size?: number }) {
 
 // ── None / generic ────────────────────────────────────────────────────────────
 
+function GitIcon({ size }: { size?: number }) {
+  // Git brand mark — orange diamond with branch lines. Brand color: #F05032.
+  return (
+    <I size={size} title="Git">
+      {/* Diamond background */}
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="#F05032" />
+      {/* Branch fork: main vertical line + two arms */}
+      <circle cx="8" cy="7.5" r="1.6" fill="white" />
+      <circle cx="8" cy="16.5" r="1.6" fill="white" />
+      <circle cx="16" cy="10.5" r="1.6" fill="white" />
+      <line x1="8" y1="9.1" x2="8" y2="14.9" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M8 9.1 C8 12 12 12 16 12 L16 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    </I>
+  )
+}
+
 function NoneIcon({ size }: { size?: number }) {
   return (
     <I size={size}>
@@ -485,6 +501,8 @@ const ICON_MAP: Record<string, (props: { size?: number }) => ReactNode> = {
   // Addons
   pwa:           PWAIcon,
   skill:         SkillIcon,
+  // Git
+  git:           GitIcon,
   // Package managers
   pnpm:          PnpmIcon,
   npm:           NpmIcon,

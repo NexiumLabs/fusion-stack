@@ -107,6 +107,11 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
     if (cat.multi) {
       return sum + val.split(",").filter((v) => v && v !== "none").length
     }
+    if (cat.hideChipWhenDefault) {
+      // Only count when the non-default option is active (matches SelectedChips behaviour)
+      const opt = cat.options.find((o) => o.id === val)
+      return sum + (opt && !opt.default ? 1 : 0)
+    }
     return sum + (val && val !== "none" ? 1 : 0)
   }, 0)
 

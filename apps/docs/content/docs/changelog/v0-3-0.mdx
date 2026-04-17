@@ -1,0 +1,38 @@
+---
+title: "0.3.0 — WorkOS AuthKit"
+description: Adds WorkOS AuthKit authentication support for Next.js projects.
+---
+
+## Added
+
+### WorkOS AuthKit (`--auth workos`)
+
+WorkOS AuthKit is now a supported auth provider for Next.js projects. It uses `@workos-inc/authkit-nextjs` — a middleware-based integration that handles the OAuth flow, session cookie management, and user hydration with zero boilerplate.
+
+**Scaffolded files:**
+
+```
+src/
+  middleware.ts          # withAuth() from @workos-inc/authkit-nextjs
+  app/
+    auth/
+      callback/
+        route.ts         # OAuth callback handler
+      sign-in/
+        page.tsx         # redirects to WorkOS hosted sign-in UI
+      sign-out/
+        route.ts         # clears session cookie
+    lib/
+      auth.ts            # getUser(), getSession() server helpers
+```
+
+**Environment variables (add to `.env.local`):**
+
+```bash
+WORKOS_API_KEY=sk_...
+WORKOS_CLIENT_ID=client_...
+WORKOS_COOKIE_PASSWORD=$(openssl rand -base64 32)
+WORKOS_REDIRECT_URI=http://localhost:3000/callback
+```
+
+Set the redirect URI under your app's configuration in the [WorkOS dashboard](https://dashboard.workos.com).
