@@ -35,7 +35,7 @@ body {
     radial-gradient(ellipse 60% 35% at 50% -4%, rgba(0, 221, 212, 0.045) 0%, transparent 60%),
     var(--bg);
   color: var(--text-1);
-  min-height: 100vh;
+  height: 100%;
 }
 
 * { box-sizing: border-box; }

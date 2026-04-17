@@ -116,43 +116,49 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
   }, 0)
 
   return (
-    <aside className="flex h-full flex-col gap-4 overflow-y-auto p-4">
-      <div>
-        <Label>Project Name</Label>
-        <Input value={selections.name} onChange={(e) => onChange({ name: e.target.value.replace(/\s/g, "-") })} placeholder="my-app" spellCheck={false} />
-      </div>
+    <aside className="flex h-full flex-col p-4">
+      {/* ── Fixed top section ───────────────────────────────── */}
+      <div className="shrink-0 space-y-4">
+        <div>
+          <Label>Project Name</Label>
+          <Input value={selections.name} onChange={(e) => onChange({ name: e.target.value.replace(/\s/g, "-") })} placeholder="my-app" spellCheck={false} />
+        </div>
 
-      {selections.fe === "nextjs" && (
-        <>
-          <Divider />
-          <div>
-            <Label>Project Layout</Label>
-            <div className="flex gap-1.5">
-              <ToggleBtn active={selections.src !== "no"} onClick={() => onChange({ src: "yes" })}>src/ dir</ToggleBtn>
-              <ToggleBtn active={selections.src === "no"}  onClick={() => onChange({ src: "no"  })}>root dir</ToggleBtn>
+        {selections.fe === "nextjs" && (
+          <>
+            <Divider />
+            <div>
+              <Label>Project Layout</Label>
+              <div className="flex gap-1.5">
+                <ToggleBtn active={selections.src !== "no"} onClick={() => onChange({ src: "yes" })}>src/ dir</ToggleBtn>
+                <ToggleBtn active={selections.src === "no"}  onClick={() => onChange({ src: "no"  })}>root dir</ToggleBtn>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
 
-      <Divider />
+        <Divider />
 
-      <div>
-        <Label>CLI Command</Label>
-        <CommandPreview selections={selections} />
+        <div>
+          <Label>CLI Command</Label>
+          <CommandPreview selections={selections} />
+        </div>
+
+        <Divider />
+
+        <Label>Selected Stack <span className="text-white/15">({totalPicks})</span></Label>
       </div>
 
-      <Divider />
-
-      <div>
-        <Label>Selected Stack <span className="text-white/15">({totalPicks})</span></Label>
+      {/* ── Scrollable chips area ────────────────────────────── */}
+      <div className="min-h-0 flex-1 overflow-y-auto py-2">
         <SelectedChips
           selections={selections as Record<string, string>}
           onRemove={handleRemoveChip}
         />
       </div>
 
-      <div className="mt-auto flex flex-col gap-2 pt-2">
+      {/* ── Fixed bottom actions ─────────────────────────────── */}
+      <div className="shrink-0 flex flex-col gap-2 pt-2">
         <Divider />
         <div className="grid grid-cols-2 gap-2 pt-2">
           <Button variant="outline" size="sm" onClick={handleRandomize}><Shuffle size={11} /> Randomize</Button>
