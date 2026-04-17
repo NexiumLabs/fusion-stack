@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/Input"
 import { CommandPreview } from "./CommandPreview"
 import { SelectedChips } from "./SelectedChips"
 import type { Selections } from "@/lib/command"
-import { STACKS } from "@/lib/stacks"
+import { STACKS, getIncompatible } from "@/lib/stacks"
 import { defaultSelections } from "@/hooks/useStackSelection"
 import { Shuffle, RotateCcw, Share2 } from "lucide-react"
 import { useState } from "react"
@@ -48,7 +48,6 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
       const cat = STACKS.find((c) => c.id === id)
       if (!cat) return "none"
       if (multi) {
-        // Pick 0–2 random options for multi-select categories
         const shuffled = [...cat.options].sort(() => Math.random() - 0.5)
         const count = Math.floor(Math.random() * 3)
         const picked = shuffled.slice(0, count).map((o) => o.id)
@@ -56,8 +55,25 @@ export function Sidebar({ selections, onChange }: { selections: Selections; onCh
       }
       return cat.options[Math.floor(Math.random() * cat.options.length)]?.id ?? "none"
     }
-    const updates = Object.fromEntries(STACKS.map((cat) => [cat.id, pick(cat.id, cat.multi)]))
-    onChange(updates as Partial<Selections>)
+    const raw = Object.fromEntries(STACKS.map((cat) => [cat.id, pick(cat.id, cat.multi)])) as Record<string, string>
+
+    // Single-pass compatibility resolution: if an option is blocked by the random picks,
+    // fall back to "none" so the result is always a valid combination.
+    const resolved = { ...raw }
+    for (const cat of STACKS) {
+      const selId = resolved[cat.id] ?? "none"
+      if (!selId || selId === "none") continue
+      if (cat.multi) {
+        const validIds = selId
+          .split(",")
+          .filter((id) => id && id !== "none" && !getIncompatible(id, cat.id, resolved))
+        resolved[cat.id] = validIds.length > 0 ? validIds.join(",") : "none"
+      } else if (getIncompatible(selId, cat.id, resolved)) {
+        resolved[cat.id] = "none"
+      }
+    }
+
+    onChange(resolved as Partial<Selections>)
   }
 
   function handleShare() {

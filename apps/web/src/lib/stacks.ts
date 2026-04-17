@@ -30,6 +30,20 @@ export const STACKS: StackCategory[] = [
         default: true,
       },
       {
+        id: "tanstack-start",
+        label: "TanStack Start",
+        description: "Full-stack React with Vite, file-based routing, and server functions",
+        icon: "tanstack",
+        isNew: true,
+      },
+      {
+        id: "vite-react",
+        label: "Vite + React",
+        description: "Fast React SPA — pair with any backend or use standalone",
+        icon: "vite",
+        isNew: true,
+      },
+      {
         id: "none",
         label: "No Frontend",
         description: "API or backend-only project",
@@ -60,7 +74,23 @@ export const STACKS: StackCategory[] = [
         description: "Built-in App Router route handlers — no separate server process",
         icon: "nextjs",
         isNew: true,
-        incompatibleWith: ["db:convex"],
+        incompatibleWith: ["db:convex", "fe:tanstack-start", "fe:vite-react", "fe:none"],
+      },
+      {
+        id: "tanstack-start",
+        label: "TanStack Start (built-in)",
+        description: "Native API routes via createAPIFileRoute — no separate server process",
+        icon: "tanstack",
+        isNew: true,
+        incompatibleWith: ["fe:nextjs", "fe:vite-react", "fe:none", "db:convex"],
+      },
+      {
+        id: "vite",
+        label: "Vite (built-in API)",
+        description: "Hono API mounted inside the Vite dev server — single port, no concurrently",
+        icon: "vite",
+        isNew: true,
+        incompatibleWith: ["fe:nextjs", "fe:tanstack-start", "fe:none", "db:convex"],
       },
       {
         id: "none",
@@ -109,7 +139,7 @@ export const STACKS: StackCategory[] = [
         description: "Built into Convex backend — reactive queries, zero config",
         icon: "convex",
         default: true,
-        incompatibleWith: ["be:hono", "be:nextjs", "be:none"],
+        incompatibleWith: ["be:hono", "be:nextjs", "be:tanstack-start", "be:vite", "be:none"],
       },
       {
         id: "postgresql",
@@ -306,7 +336,7 @@ export const STACKS: StackCategory[] = [
       {
         id: "pwa",
         label: "PWA",
-        description: "Service worker, web manifest, push notifications, and security headers — pre-wired per Next.js docs",
+        description: "Service worker and web manifest — Next.js via next-pwa, Vite via vite-plugin-pwa",
         icon: "pwa",
         isNew: true,
         incompatibleWith: ["fe:none"],
@@ -406,6 +436,10 @@ export function getIncompatible(
       if (rCat && rOpt && selections[rCat] === rOpt) {
         const conflictCat = STACKS.find((c) => c.id === rCat)
         const conflictOpt = conflictCat?.options.find((o) => o.id === rOpt)
+        // When the blocking option is "none", show a dependency hint instead of "Not compatible with None"
+        if (rOpt === "none") {
+          return `Requires a ${conflictCat?.label.toLowerCase() ?? rCat}`
+        }
         return `Not compatible with ${conflictOpt?.label ?? rOpt}`
       }
     }
@@ -414,6 +448,9 @@ export function getIncompatible(
   // Reverse check: does something already selected declare itself incompatible with this?
   for (const [selCatId, selOptId] of Object.entries(selections)) {
     if (selCatId === categoryId) continue
+    // ORM is downstream of DB — don't let ORM default ("none") block DB selection.
+    // The forward check already prevents picking orm:none after db:mongodb is chosen.
+    if (categoryId === "db" && selCatId === "orm") continue
     const selCat = STACKS.find((c) => c.id === selCatId)
     const selOpt = selCat?.options.find((o) => o.id === selOptId)
     if (!selOpt?.incompatibleWith) continue
@@ -421,6 +458,10 @@ export function getIncompatible(
     for (const rule of selOpt.incompatibleWith) {
       const [rCat, rOpt] = rule.split(":")
       if (rCat === categoryId && rOpt === optionId) {
+        // When the selected option is itself a "none" choice, give a dependency hint
+        if (selOptId === "none") {
+          return `Requires a ${selCat?.label.toLowerCase() ?? selCatId}`
+        }
         return `Not compatible with ${selOpt.label}`
       }
     }
