@@ -51,7 +51,12 @@ pnpm create fusion-stack@latest my-app \
   --api-layer trpc
 ```
 
-After generation, follow the printed next steps to set your environment variables and start the dev server.
+After generation, the CLI will:
+- Write all project files and install dependencies
+- Initialise a git repository and create a `chore: initial scaffold` commit
+- Print next steps for environment variables and starting the dev server
+
+To skip git initialisation: add `--no-git` to the command.
 
 ---
 
