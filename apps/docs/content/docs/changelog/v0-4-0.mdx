@@ -52,6 +52,28 @@ Six new template slices cover every auth provider × new frontend combination:
 | `auth-workos-tanstack-start` | `@workos-inc/node` — server function handles OAuth callback |
 | `auth-workos-vite` | `@workos-inc/authkit-react` (+ `@workos-inc/node` if `be:hono`) |
 
+### Git initialisation
+
+Every generated project now starts with a proper git repository. After files are written the CLI runs:
+
+```bash
+git init
+git add -A
+git commit -m "chore: initial scaffold"
+```
+
+A local `user.name` / `user.email` is set inside the repo before committing, so this works even on machines with no global git identity configured.
+
+Use `--no-git` to skip this step entirely.
+
+### Selection-aware `.gitignore`
+
+The `.gitignore` is now generated programmatically from your selections rather than copied from a template file. This means:
+
+- It always includes exactly the right entries for your chosen stack (`.vinxi/` for TanStack Start, `convex/_generated/` for Convex, `.push-subscriptions.json` for PWA, etc.)
+- The environment section includes commented key hints so you know at a glance which secrets belong in `.env.local`
+- `DATABASE_URL` hints show the correct connection string format for your database (`mysql://`, `file:./`, `postgresql://`)
+
 ### `ui-shadcn-vite` slice
 
 Dedicated shadcn/ui slice for Vite React with correct `src/` path aliases (`@/components/ui`, `@/lib/utils`) and `rsc: false` in `components.json`.

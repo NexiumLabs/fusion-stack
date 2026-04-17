@@ -15,6 +15,8 @@ All notable changes to `create-fusion-stack`. Click a version to expand its summ
 
 **New frontends:** TanStack Start and Vite + React are now first-class citizens. Every auth provider (Clerk, WorkOS, Better Auth) ships a dedicated slice for each new frontend — no combination is blocked.
 
+**Git initialisation:** Every generated project now starts with `git init` + an initial commit. A selection-aware `.gitignore` is generated from your choices — correct entries for your frontend, backend, and auth provider, plus commented `.env.local` key hints for every secret in your stack.
+
 **Bug fixes:** Duplicate `src/` nodes in folder preview, wrong WorkOS redirect URIs, `fe:none` showing `vite` backend in CLI, randomize button ignoring compatibility rules.
 
 [Full release notes →](/docs/changelog/v0-4-0)
