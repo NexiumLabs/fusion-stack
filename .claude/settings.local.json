@@ -65,7 +65,9 @@
       "Bash(echo \"web exit: $?\")",
       "Bash(echo \"cli exit: $?\")",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(xargs wc:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
