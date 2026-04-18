@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@clerk/react": "^5.0.0",
-    "@clerk/backend": "^1.0.0"
+    "@clerk/backend": "^1.0.0",
+    "react-router-dom": "^7.0.0"
   }
 }

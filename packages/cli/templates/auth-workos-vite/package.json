@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@workos-inc/authkit-react": "^1.0.0",
-    "@workos-inc/node": "^8.0.0"
+    "@workos-inc/node": "^8.0.0",
+    "react-router-dom": "^7.0.0"
   }
 }
