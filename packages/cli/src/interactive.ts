@@ -16,13 +16,16 @@ function abort(): never {
 }
 
 const SKILLS_CATALOG = [
-  { value: "careerops/career-ops",        label: "CareerOps",                    hint: "Career management & job search automation" },
-  { value: "nextjs-patterns/skills",      label: "Next.js Patterns",             hint: "App Router patterns and best practices" },
-  { value: "react-skills/core",           label: "React Best Practices",         hint: "Component design, hooks, and performance" },
-  { value: "typescript-skills/mastery",   label: "TypeScript Mastery",           hint: "Advanced types, generics, and tooling" },
-  { value: "database-skills/postgresql",  label: "PostgreSQL",                   hint: "Queries, indexing, and schema design" },
-  { value: "testing-skills/vitest",       label: "Testing (Vitest / Playwright)", hint: "Unit, integration, and e2e testing" },
-  { value: "tailwind-skills/core",        label: "Tailwind CSS",                 hint: "Utility-first styling and design systems" },
+  { value: "vercel-labs/next-skills",                          label: "Next.js",          hint: "App Router patterns and best practices" },
+  { value: "mattpocock/skills",                                label: "TypeScript",        hint: "Advanced types, generics, and tooling by Matt Pocock" },
+  { value: "anthropics/claude-code",                           label: "Claude Code",       hint: "Best practices for AI-assisted coding with Claude" },
+  { value: "ibelick/ui-skills",                                label: "UI / Design",       hint: "Component design patterns and UI best practices" },
+  { value: "currents-dev/playwright-best-practices-skill",     label: "Testing",           hint: "Playwright and testing best practices" },
+  { value: "shadcn/ui",                                        label: "shadcn/ui",         hint: "Component library patterns and customization" },
+  { value: "supabase/agent-skills",                            label: "Supabase",          hint: "Supabase database, auth, and storage patterns" },
+  { value: "get-convex/agent-skills",                          label: "Convex",            hint: "Convex reactive backend patterns" },
+  { value: "neondatabase/agent-skills",                        label: "Neon / PostgreSQL", hint: "Serverless Postgres patterns and schema design" },
+  { value: "better-auth/skills",                               label: "Better Auth",       hint: "Auth patterns with better-auth" },
 ]
 
 export async function runInteractive(overrides: { git?: boolean } = {}): Promise<void> {
