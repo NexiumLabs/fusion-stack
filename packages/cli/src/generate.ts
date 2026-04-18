@@ -172,6 +172,31 @@ async function flattenSrcDir(targetDir: string): Promise<void> {
   }
 }
 
+function stackConfigToken(s: Selections): string {
+  const feMap:   Partial<Record<Selections["fe"],         string>> = { nextjs: "Next.js", "tanstack-start": "TanStack Start", "vite-react": "Vite + React" }
+  const beMap:   Partial<Record<Selections["be"],         string>> = { convex: "Convex", hono: "Hono", nextjs: "Next.js API Routes", "tanstack-start": "TanStack Start", vite: "Vite (built-in)" }
+  const authMap: Partial<Record<Selections["auth"],       string>> = { clerk: "Clerk", "better-auth": "Better Auth", workos: "WorkOS AuthKit" }
+  const dbMap:   Partial<Record<Selections["db"],         string>> = { convex: "Convex DB", postgresql: "PostgreSQL", mongodb: "MongoDB", mysql: "MySQL", sqlite: "SQLite" }
+  const ormMap:  Partial<Record<Selections["orm"],        string>> = { drizzle: "Drizzle", prisma: "Prisma", mongoose: "Mongoose" }
+  const provMap: Partial<Record<Selections["dbProvider"], string>> = { supabase: "Supabase", neon: "Neon", planetscale: "PlanetScale" }
+  const uiMap:   Partial<Record<Selections["ui"],         string>> = { shadcn: "shadcn/ui" }
+  const apiMap:  Partial<Record<Selections["apiLayer"],   string>> = { trpc: "tRPC", orpc: "oRPC" }
+  const emailMap:Partial<Record<Selections["email"],      string>> = { resend: "Resend" }
+
+  const items: Array<{ label: string; value: string; icon: string }> = []
+  if (feMap[s.fe])         items.push({ label: "Frontend",    value: feMap[s.fe]!,         icon: "⬡" })
+  if (beMap[s.be])         items.push({ label: "Backend",     value: beMap[s.be]!,         icon: "⚙️" })
+  if (authMap[s.auth])     items.push({ label: "Auth",        value: authMap[s.auth]!,     icon: "🔑" })
+  if (dbMap[s.db])         items.push({ label: "Database",    value: dbMap[s.db]!,         icon: "🗄" })
+  if (ormMap[s.orm])       items.push({ label: "ORM",         value: ormMap[s.orm]!,       icon: "📐" })
+  if (provMap[s.dbProvider]) items.push({ label: "DB Provider", value: provMap[s.dbProvider]!, icon: "☁️" })
+  if (uiMap[s.ui])         items.push({ label: "UI",          value: uiMap[s.ui]!,         icon: "🎨" })
+  if (apiMap[s.apiLayer])  items.push({ label: "API Layer",   value: apiMap[s.apiLayer]!,  icon: "🔌" })
+  if (emailMap[s.email])   items.push({ label: "Email",       value: emailMap[s.email]!,   icon: "✉️" })
+  if (s.addons.includes("pwa")) items.push({ label: "Addon", value: "PWA",                 icon: "📱" })
+  return JSON.stringify(items)
+}
+
 function prismaProvider(db: Selections["db"]): string {
   const map: Partial<Record<Selections["db"], string>> = {
     postgresql: "postgresql",
@@ -240,8 +265,11 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
   // 7. Merge .env.example files
   const mergedEnv = await collectEnvExamples(sliceDirs)
   if (mergedEnv) {
-    const header = "# Copy this file to .env.local and fill in your values\n\n"
-    await fse.writeFile(path.join(targetDir, ".env.example"), header + mergedEnv + "\n", "utf-8")
+    const exampleHeader = "# Copy this file to .env.local and fill in your values\n\n"
+    await fse.writeFile(path.join(targetDir, ".env.example"), exampleHeader + mergedEnv + "\n", "utf-8")
+    // Also write .env.local as a ready-to-edit starting point (it's gitignored — safe to generate)
+    const localHeader = "# Fill in your values — this file is gitignored and never committed\n\n"
+    await fse.writeFile(path.join(targetDir, ".env.local"), localHeader + mergedEnv + "\n", "utf-8")
   }
 
   // 8. Write merged package.json
@@ -258,6 +286,7 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
     PM_RUN:            s.pm === "pnpm" ? "pnpm" : "npm run",
     PRISMA_PROVIDER:   prismaProvider(s.db),
     PUBLIC_VAR_PREFIX: s.fe === "nextjs" ? "NEXT_PUBLIC" : "VITE",
+    STACK_CONFIG:      stackConfigToken(s),
   }
   await walkAndApplyTokens(targetDir, tokens)
 
@@ -283,7 +312,7 @@ export async function generate(s: Selections, targetDir: string): Promise<void> 
   printNextSteps(s)
 
   // 12. Install skills
-  await installSkills(s.skills, targetDir)
+  await installSkills(s.skills, targetDir, s.pm)
 
   clack.outro(`${pc.green("Done!")} Happy building. ${pc.dim("— NexiumLabs")}`)
 }
