@@ -67,7 +67,8 @@
       "Bash(echo \"EXIT:$?\")",
       "Bash(git add:*)",
       "Bash(xargs wc:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(awk '{print $NF}')"
     ]
   }
 }
