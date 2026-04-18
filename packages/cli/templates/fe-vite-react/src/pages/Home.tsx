@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link } from "react-router-dom"
 
 const FEATURES = [
   {
     icon: "⚡",
     title: "Dev Server",
-    description: "Run pnpm dev to start the development server with hot reload via Vinxi.",
+    description: "Run pnpm dev to start the development server with hot reload via Vite.",
   },
   {
     icon: "🔑",
@@ -14,22 +14,18 @@ const FEATURES = [
   {
     icon: "📁",
     title: "Project Structure",
-    description: "Routes live in app/routes/ — file-based routing powered by TanStack Router.",
+    description: "Source lives in src/ — components, pages, and lib all clearly separated.",
   },
   {
     icon: "🚀",
     title: "Deploy",
-    description: "Build for production with pnpm build — deploy to any Node.js-compatible host.",
+    description: "Build for production with pnpm build — deploy anywhere static files are served.",
   },
 ]
 
 const STACK_CONFIG = {{STACK_CONFIG}} as Array<{ label: string; value: string; icon: string }>
 
-export const Route = createFileRoute("/")({
-  component: HomePage,
-})
-
-function HomePage() {
+export function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Navbar */}

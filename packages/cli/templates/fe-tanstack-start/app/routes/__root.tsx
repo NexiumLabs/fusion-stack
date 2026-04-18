@@ -21,11 +21,11 @@ export const Route = createRootRoute({
 
 function RootDocument() {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full antialiased">
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="flex h-full flex-col bg-brand-bg text-brand-text">
         <Outlet />
         <Scripts />
       </body>
