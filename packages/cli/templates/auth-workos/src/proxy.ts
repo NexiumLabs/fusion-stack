@@ -1,6 +1,12 @@
 import { authkitMiddleware } from "@workos-inc/authkit-nextjs"
 
-export default authkitMiddleware()
+export default authkitMiddleware({
+    redirectUri: process.env.WORKOS_REDIRECT_URI, // Explicitly passed
+    middlewareAuth: {
+      enabled: true,
+      unauthenticatedPaths: ["/", "/api/auth/(.*)"],
+    },
+  });
 
 export const config = {
   matcher: [
