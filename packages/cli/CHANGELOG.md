@@ -1,5 +1,11 @@
 # create-fusion-stack
 
+## 0.5.0
+
+### Minor Changes
+
+- 4ff4a73: new additions made
+
 ## 0.4.0
 
 ### Minor Changes
