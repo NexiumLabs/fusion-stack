@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { default as __fd_glob_39 } from "../content/docs/skills/meta.json?collection=meta"
-import { default as __fd_glob_38 } from "../content/docs/ui/meta.json?collection=meta"
-import { default as __fd_glob_37 } from "../content/docs/frontend/meta.json?collection=meta"
-import { default as __fd_glob_36 } from "../content/docs/email/meta.json?collection=meta"
+import { default as __fd_glob_39 } from "../content/docs/ui/meta.json?collection=meta"
+import { default as __fd_glob_38 } from "../content/docs/skills/meta.json?collection=meta"
+import { default as __fd_glob_37 } from "../content/docs/email/meta.json?collection=meta"
+import { default as __fd_glob_36 } from "../content/docs/frontend/meta.json?collection=meta"
 import { default as __fd_glob_35 } from "../content/docs/database/meta.json?collection=meta"
 import { default as __fd_glob_34 } from "../content/docs/changelog/meta.json?collection=meta"
 import { default as __fd_glob_33 } from "../content/docs/backend/meta.json?collection=meta"
@@ -49,4 +49,4 @@ const create = server<typeof Config, import("fumadocs-mdx/runtime/types").Intern
 
 export const docs = await create.doc("docs", "content/docs", {"index.mdx": __fd_glob_0, "addons/pwa.mdx": __fd_glob_1, "api-layer/orpc.mdx": __fd_glob_2, "api-layer/trpc.mdx": __fd_glob_3, "auth/better-auth.mdx": __fd_glob_4, "auth/clerk.mdx": __fd_glob_5, "auth/workos.mdx": __fd_glob_6, "backend/convex.mdx": __fd_glob_7, "backend/hono.mdx": __fd_glob_8, "backend/nextjs.mdx": __fd_glob_9, "backend/tanstack-start.mdx": __fd_glob_10, "backend/vite.mdx": __fd_glob_11, "changelog/index.mdx": __fd_glob_12, "changelog/v0-2-0.mdx": __fd_glob_13, "changelog/v0-3-0.mdx": __fd_glob_14, "changelog/v0-4-0.mdx": __fd_glob_15, "database/convex.mdx": __fd_glob_16, "database/mongodb.mdx": __fd_glob_17, "database/mysql.mdx": __fd_glob_18, "database/orm.mdx": __fd_glob_19, "database/postgresql.mdx": __fd_glob_20, "database/providers.mdx": __fd_glob_21, "database/sqlite.mdx": __fd_glob_22, "email/resend.mdx": __fd_glob_23, "frontend/nextjs.mdx": __fd_glob_24, "frontend/tanstack-start.mdx": __fd_glob_25, "frontend/vite-react.mdx": __fd_glob_26, "skills/index.mdx": __fd_glob_27, "ui/shadcn.mdx": __fd_glob_28, });
 
-export const meta = await create.meta("meta", "content/docs", {"meta.json": __fd_glob_29, "addons/meta.json": __fd_glob_30, "api-layer/meta.json": __fd_glob_31, "auth/meta.json": __fd_glob_32, "backend/meta.json": __fd_glob_33, "changelog/meta.json": __fd_glob_34, "database/meta.json": __fd_glob_35, "email/meta.json": __fd_glob_36, "frontend/meta.json": __fd_glob_37, "ui/meta.json": __fd_glob_38, "skills/meta.json": __fd_glob_39, });
+export const meta = await create.meta("meta", "content/docs", {"meta.json": __fd_glob_29, "addons/meta.json": __fd_glob_30, "api-layer/meta.json": __fd_glob_31, "auth/meta.json": __fd_glob_32, "backend/meta.json": __fd_glob_33, "changelog/meta.json": __fd_glob_34, "database/meta.json": __fd_glob_35, "frontend/meta.json": __fd_glob_36, "email/meta.json": __fd_glob_37, "skills/meta.json": __fd_glob_38, "ui/meta.json": __fd_glob_39, });

@@ -39,6 +39,11 @@ const baseOptions: BaseLayoutProps = {
       url: 'https://github.com/NexiumLabs/fusion-stack',
       active: 'none',
     },
+    {
+      text: 'Discord',
+      url: 'https://discord.gg/fEnEWUZqmp',
+      active: 'none',
+    },
   ],
 }
 
