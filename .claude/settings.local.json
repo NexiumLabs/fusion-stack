@@ -68,7 +68,9 @@
       "Bash(git add:*)",
       "Bash(xargs wc:*)",
       "Bash(git commit:*)",
-      "Bash(awk '{print $NF}')"
+      "Bash(awk '{print $NF}')",
+      "Bash(mv \"packages/cli/templates/auth-clerk/src/proxy.ts\" \"packages/cli/templates/auth-clerk/src/middleware.ts\")",
+      "Bash(mv \"packages/cli/templates/auth-workos/src/proxy.ts\" \"packages/cli/templates/auth-workos/src/middleware.ts\")"
     ]
   }
 }
